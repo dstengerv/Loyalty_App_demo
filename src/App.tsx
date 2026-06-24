@@ -271,6 +271,109 @@ export default function App() {
     }
   };
 
+  // PWA (Progressive Web App) Install Prompt Handler
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState<boolean>(false);
+  const [isStandalone, setIsStandalone] = useState<boolean>(() => {
+    return window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+  });
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+      console.log('beforeinstallprompt event was fired');
+    };
+
+    const handleAppInstalled = () => {
+      setIsStandalone(true);
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+      showToast('¡Buttery Loyalty instalada con éxito en tu pantalla de inicio!', 'success');
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (!deferredPrompt) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      if (isIOS) {
+        showToast('En iOS/Safari, pulsa el botón "Compartir" y selecciona "Agregar al inicio".', 'info');
+      } else {
+        showToast('Para instalar, abre el menú del navegador y selecciona "Instalar aplicación".', 'info');
+      }
+      return;
+    }
+
+    try {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`PWA installation outcome: ${outcome}`);
+      if (outcome === 'accepted') {
+        setIsStandalone(true);
+        setIsInstallable(false);
+        setDeferredPrompt(null);
+      }
+    } catch (err) {
+      console.error('Error during PWA prompt:', err);
+    }
+  };
+
+  // Dynamic PWA Manifest & Apple Touch Icon Injection
+  useEffect(() => {
+    let manifestLink = document.querySelector('link[rel="manifest"]');
+    if (!manifestLink) {
+      manifestLink = document.createElement('link');
+      manifestLink.setAttribute('rel', 'manifest');
+      document.head.appendChild(manifestLink);
+    }
+
+    const manifestData = {
+      name: "Buttery Loyalty Club",
+      short_name: "Buttery Loyalty",
+      description: "Tarjeta de fidelidad digital para Buttery Club Polanco",
+      start_url: "/",
+      display: "standalone",
+      background_color: brandBg || "#FAF7F2",
+      theme_color: brandGold || "#C5A059",
+      orientation: "portrait",
+      icons: [
+        {
+          src: logoUrl || "/buttery_logo.svg",
+          sizes: "any",
+          type: logoUrl && logoUrl.startsWith('data:image/svg+xml') ? "image/svg+xml" : (logoUrl && logoUrl.startsWith('data:image/png') ? "image/png" : "image/svg+xml"),
+          purpose: "any maskable"
+        }
+      ]
+    };
+
+    const stringManifest = JSON.stringify(manifestData);
+    const blob = new Blob([stringManifest], { type: 'application/json' });
+    const manifestURL = URL.createObjectURL(blob);
+
+    manifestLink.setAttribute('href', manifestURL);
+
+    let appleTouchLink = document.querySelector('link[rel="apple-touch-icon"]');
+    if (!appleTouchLink) {
+      appleTouchLink = document.createElement('link');
+      appleTouchLink.setAttribute('rel', 'apple-touch-icon');
+      document.head.appendChild(appleTouchLink);
+    }
+    appleTouchLink.setAttribute('href', logoUrl || "/buttery_logo.svg");
+
+    return () => {
+      URL.revokeObjectURL(manifestURL);
+    };
+  }, [logoUrl, brandBg, brandGold]);
+
   // View States
   const [currentPath, setCurrentPath] = useState<string>(() => {
     const path = window.location.pathname;
