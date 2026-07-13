@@ -948,7 +948,7 @@ export default function App() {
                               min-h-[260px]">
 
                 {/* Logo + location */}
-                <div className="relative z-10 px-8 pt-8 pb-0">
+                <div className="relative z-10 px-8 pt-10 pb-0 flex flex-col items-center text-center">
                   {logoUrl ? (
                     <img
                       src={logoUrl}
@@ -959,18 +959,18 @@ export default function App() {
                     />
                   ) : (
                     <img
-                      src={butteryLogo}
+                      src="/buttery-logo-gold.png"
                       alt="Buttery"
-                      className="h-14 w-auto object-contain select-none"
-                      style={{ filter: 'brightness(0) saturate(100%) invert(68%) sepia(40%) saturate(600%) hue-rotate(5deg) brightness(95%)' }}
+                      className="h-24 w-auto object-contain select-none"
                       referrerPolicy="no-referrer"
                     />
                   )}
-                  <div className="flex items-center gap-2 mt-3">
+                  <div className="flex items-center justify-center gap-2 mt-4">
                     <div className="h-px w-6 bg-[#C5A059]" />
                     <p className="font-sans text-[9px] tracking-[0.22em] text-[#C5A059] font-bold uppercase">
                       Polanco · Ciudad de México
                     </p>
+                    <div className="h-px w-6 bg-[#C5A059]" />
                   </div>
                 </div>
 
