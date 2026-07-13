@@ -851,7 +851,9 @@ export default function App() {
   const activeVouchers = vouchers.filter(v => !v.isUsed);
 
   return (
-      <div className="font-sans selection:bg-amber-100 selection:text-amber-900 min-h-screen flex flex-col">
+      <div className={`font-sans selection:bg-amber-100 selection:text-amber-900 min-h-screen flex flex-col ${
+        currentUser?.role === 'client' ? 'bg-[#2F4A3A] items-center justify-start' : ''
+      }`}>
       
       {/* Toast Notification message */}
       {successToast && (
@@ -882,7 +884,9 @@ export default function App() {
         {/* The screen itself */}
         <div 
           id="pwa-screen"
-          className="w-full bg-brand-bg overflow-hidden flex flex-col min-h-screen"
+          className={`w-full bg-brand-bg overflow-hidden flex flex-col min-h-screen ${
+            currentUser?.role === 'client' ? 'md:max-w-sm md:min-h-screen md:shadow-2xl' : ''
+          }`}
           style={{
             '--color-brand-brown': brandBrown,
             '--color-brand-gold': brandGold,
