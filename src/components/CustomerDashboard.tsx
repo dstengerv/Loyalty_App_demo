@@ -178,7 +178,7 @@ export default function CustomerDashboard({
                 return (
                   <div
                     key={idx}
-                    className={`aspect-square rounded-full flex items-center justify-center border-2 transition-all ${
+                    className={`aspect-square rounded-full overflow-hidden flex items-center justify-center border-2 transition-all ${
                       filled
                         ? 'border-[#C5A059] bg-[#3A5A48]'
                         : 'border-white/20 bg-white/5'
@@ -186,7 +186,7 @@ export default function CustomerDashboard({
                   >
                     {filled ? (
                       stampSymbol && (stampSymbol.startsWith('data:image/') || stampSymbol.startsWith('http')) ? (
-                        <img src={stampSymbol} alt="Sello" className="w-7 h-7 object-contain select-none" referrerPolicy="no-referrer" />
+                        <img src={stampSymbol} alt="Sello" className="w-full h-full object-cover select-none" referrerPolicy="no-referrer" />
                       ) : (
                         <span className="text-lg leading-none select-none filter drop-shadow-sm">{stampSymbol || <Coffee className="w-5 h-5 text-[#C5A059]" />}</span>
                       )
