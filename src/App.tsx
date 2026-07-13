@@ -10,7 +10,10 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  Info
+  Info,
+  Eye,
+  EyeOff,
+  Gift
 } from 'lucide-react';
 import { User, Transaction, RewardItem, QRVoucher, UserRole } from './types';
 import { SEED_USERS, SEED_TRANSACTIONS, SEED_VOUCHERS, REWARDS } from './data';
@@ -117,6 +120,7 @@ export default function App() {
             setSettingsPin(dbSettings.settings_pin || '1234');
             setLogoUrl(dbSettings.logo_url || '');
             setLogoHeight(dbSettings.logo_height !== undefined && dbSettings.logo_height !== null ? Number(dbSettings.logo_height) : 40);
+            setCardBgUrl(dbSettings.card_bg_url || 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80');
 
             localStorage.setItem('buttery_stamp_symbol', dbSettings.stamp_symbol || '🥐');
             localStorage.setItem('buttery_brand_brown', dbSettings.brand_brown || '#2D241E');
@@ -125,6 +129,7 @@ export default function App() {
             localStorage.setItem('buttery_settings_pin', dbSettings.settings_pin || '1234');
             localStorage.setItem('buttery_logo_url', dbSettings.logo_url || '');
             localStorage.setItem('buttery_logo_height', (dbSettings.logo_height !== undefined && dbSettings.logo_height !== null ? dbSettings.logo_height : 40).toString());
+            localStorage.setItem('buttery_card_bg_url', dbSettings.card_bg_url || 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80');
           }
         } catch (settingsErr) {
           console.warn('Fallback: Could not fetch app_settings table or it is not provisioned yet.', settingsErr);
@@ -223,8 +228,9 @@ export default function App() {
     const saved = localStorage.getItem('buttery_logo_height');
     return saved ? parseInt(saved, 10) : 40;
   });
+  const [cardBgUrl, setCardBgUrl] = useState<string>(() => localStorage.getItem('buttery_card_bg_url') || 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80');
 
-  const handleUpdateSettings = async (stamp: string, brown: string, gold: string, bg: string, newPin: string, logo: string, height: number) => {
+  const handleUpdateSettings = async (stamp: string, brown: string, gold: string, bg: string, newPin: string, logo: string, height: number, newCardBgUrl: string) => {
     setStampSymbol(stamp);
     setBrandBrown(brown);
     setBrandGold(gold);
@@ -232,6 +238,7 @@ export default function App() {
     setSettingsPin(newPin);
     setLogoUrl(logo);
     setLogoHeight(height);
+    setCardBgUrl(newCardBgUrl);
     localStorage.setItem('buttery_stamp_symbol', stamp);
     localStorage.setItem('buttery_brand_brown', brown);
     localStorage.setItem('buttery_brand_gold', gold);
@@ -239,6 +246,7 @@ export default function App() {
     localStorage.setItem('buttery_settings_pin', newPin);
     localStorage.setItem('buttery_logo_url', logo);
     localStorage.setItem('buttery_logo_height', height.toString());
+    localStorage.setItem('buttery_card_bg_url', newCardBgUrl);
 
     if (isSupabaseConfigured && supabase) {
       try {
@@ -253,6 +261,7 @@ export default function App() {
             settings_pin: newPin,
             logo_url: logo,
             logo_height: height,
+            card_bg_url: newCardBgUrl,
             updated_at: new Date().toISOString()
           }, { onConflict: 'id' });
 
@@ -431,6 +440,7 @@ export default function App() {
 
   // Authentication error message
   const [authError, setAuthError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [successToast, setSuccessToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Helper to show elegant full-screen safe messages
@@ -443,7 +453,7 @@ export default function App() {
     if (successToast) {
       const timer = setTimeout(() => {
         setSuccessToast(null);
-      }, 4500);
+      }, 2500);
       return () => clearTimeout(timer);
     }
   }, [successToast]);
@@ -944,40 +954,43 @@ export default function App() {
   const activeVouchers = vouchers.filter(v => !v.isUsed);
 
   return (
-    <div className="min-h-screen bg-[#F3EFE9] flex flex-col justify-center items-center py-6 px-4 font-sans selection:bg-amber-100 selection:text-amber-900">
+      <div className={`font-sans selection:bg-amber-100 selection:text-amber-900 min-h-screen flex flex-col ${
+        currentUser?.role === 'client' ? 'bg-[#2F4A3A] items-center justify-start' : ''
+      }`}>
       
       {/* Toast Notification message */}
       {successToast && (
-        <div 
-          id="success-toast" 
-          className={`fixed top-6 right-6 z-50 max-w-sm p-4 rounded-2xl flex items-center gap-3 shadow-xl border animate-fadeIn ${
-            successToast.type === 'error' 
-              ? 'bg-rose-50 border-rose-200 text-rose-900' 
-              : successToast.type === 'info' 
-                ? 'bg-blue-50 border-blue-200 text-blue-900' 
-                : 'bg-stone-900 border-white/15 text-white'
+        <div
+          id="success-toast"
+          style={{ animation: 'slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
+          className={`fixed top-6 left-4 right-4 mx-auto max-w-sm z-50 px-5 py-3.5 rounded-2xl flex items-center gap-3 shadow-2xl border ${
+            successToast.type === 'error'
+              ? 'bg-rose-600 border-rose-500/30 text-white'
+              : successToast.type === 'info'
+                ? 'bg-[#2D241E] border-white/10 text-white'
+                : 'bg-[#2F4A3A] border-white/10 text-white'
           }`}
         >
           {successToast.type === 'error' ? (
-            <AlertCircle className="w-5 h-5 text-rose-500 flex-shrink-0" />
+            <AlertCircle className="w-4 h-4 text-white/80 flex-shrink-0" />
           ) : successToast.type === 'info' ? (
-            <Info className="w-5 h-5 text-blue-500 flex-shrink-0" />
+            <Info className="w-4 h-4 text-[#C5A059] flex-shrink-0" />
           ) : (
-            <CheckCircle className="w-5 h-5 text-amber-400 flex-shrink-0" />
+            <CheckCircle className="w-4 h-4 text-[#C5A059] flex-shrink-0" />
           )}
-          <span className="font-sans text-xs font-semibold">{successToast.message}</span>
+          <span className="font-sans text-xs font-semibold tracking-wide">{successToast.message}</span>
         </div>
       )}
 
       {/* Main Core Outer Container Wrapper */}
-      <div className={`w-full transition-all duration-300 ${
-        currentUser?.role === 'staff' ? 'max-w-5xl' : 'max-w-xl'
-      }`}>
+      <div className="w-full">
 
         {/* The screen itself */}
         <div 
           id="pwa-screen"
-          className="w-full bg-brand-bg overflow-hidden flex flex-col rounded-3xl border border-[#1C1A17]/10 shadow-lg min-h-[780px]"
+          className={`w-full bg-brand-bg overflow-hidden flex flex-col min-h-screen ${
+            currentUser?.role === 'client' ? 'md:max-w-sm md:mx-auto md:shadow-2xl' : ''
+          }`}
           style={{
             '--color-brand-brown': brandBrown,
             '--color-brand-gold': brandGold,
@@ -997,6 +1010,7 @@ export default function App() {
                 onLogout={handleLogout}
                 onClaimCompletedCard={handleClaimCompletedCard}
                 stampSymbol={stampSymbol}
+                cardBgUrl={cardBgUrl}
               />
             ) : (
               <StaffDashboard
@@ -1016,18 +1030,23 @@ export default function App() {
                 settingsPin={settingsPin}
                 logoUrl={logoUrl}
                 logoHeight={logoHeight}
+                cardBgUrl={cardBgUrl}
                 onUpdateSettings={handleUpdateSettings}
               />
             )
           ) : (
             /* LOGIN & ACCOUNT PORTAL SCREENS */
-            <div className="flex-1 flex flex-col justify-between py-8 px-6 text-brand-brown overflow-y-auto">
-              
-              {/* BRAND LOGO HEADER */}
-              <div className="text-center py-6 relative overflow-hidden">
-                <div className="flex flex-col items-center">
+            <div className="flex-1 flex flex-col md:flex-row min-h-screen">
+
+              {/* ── LEFT / TOP PANEL: Dark green brand panel ── */}
+              <div className="relative flex flex-col bg-[#2F4A3A] overflow-hidden
+                              md:w-[340px] md:min-h-full md:flex-shrink-0
+                              min-h-[260px]">
+
+                {/* Logo + location */}
+                <div className="relative z-10 px-8 pt-10 pb-0 flex flex-col items-center text-center">
                   {logoUrl ? (
-                    <img 
+                    <img
                       src={logoUrl}
                       alt="Brand Logo"
                       style={{ height: `${logoHeight}px` }}
@@ -1035,189 +1054,275 @@ export default function App() {
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <img 
-                      src={butteryLogo}
-                      alt="Buttery Logo"
-                      className="h-30 w-auto object-contain select-none mix-blend-multiply"
+                    <img
+                      src="/buttery-logo-gold.png"
+                      alt="Buttery"
+                      className="h-24 w-auto object-contain select-none"
                       referrerPolicy="no-referrer"
                     />
                   )}
-                  <h1 className="font-serif italic text-3xl font-light text-[#2D241E]/80 tracking-tight leading-none mt-4">
-                  </h1>
-                </div>
-                <p className="font-sans text-[9px] tracking-widest text-[#C5A059] font-bold uppercase mt-3">
-                  POLANCO · CIUDAD DE MÉXICO
-                </p>
-                <div className="h-[1px] w-12 bg-brand-brown/15 mx-auto mt-4"></div>
-              </div>
-
-              {/* CORE FORM WRAPPER CARD */}
-              <div className="space-y-6 flex-1 flex flex-col justify-center">
-
-                {/* Form header prompt */}
-                <div className="text-center">
-                  <h2 className="font-serif text-3xl font-normal text-brand-brown">
-                    {loginRole === 'client' 
-                      ? (isRegistering ? 'Únete al Club' : 'Bienvenido')
-                      : 'Acceso Staff'
-                    }
-                  </h2>
-                  <p className="font-sans text-xs text-stone-550 mt-1 leading-relaxed max-w-[320px] mx-auto">
-                    {loginRole === 'client'
-                      ? (isRegistering ? 'Regístrate hoy y recibe un obsequio especial de 50 puntos de bienvenida.' : 'Inicia sesión para acumular tus visitas y canjearlas por productos gratis.')
-                      : 'Consola interna de barra exclusiva para baristas y personal de servicio en Polanco.'
-                    }
-                  </p>
-                </div>
-
-                {authError && (
-                  <div className="bg-brand-bg border border-red-200 p-3 rounded-lg text-red-700 text-xs text-center font-serif italic">
-                    {authError}
-                  </div>
-                )}
-
-                {/* SIGN IN FORM (With editorial fine border inputs) */}
-                {!isRegistering ? (
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-[9px] uppercase tracking-widest font-bold text-stone-400 px-1">Correo Electrónico</label>
-                      <div className="relative">
-                        <Mail className="absolute left-1 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-brown/30" />
-                        <input
-                          id="login-email"
-                          type="email"
-                          placeholder={loginRole === 'client' ? 'ejemplo@correo.com' : 'staff@buttery.mx'}
-                          value={emailInput}
-                          onChange={(e) => setEmailInput(e.target.value)}
-                          required
-                          className="w-full border-b border-brand-brown/20 py-2.5 pl-8 pr-1 focus:border-brand-gold outline-hidden transition-colors text-base font-serif italic text-brand-brown placeholder:text-stone-300 placeholder:font-sans placeholder:not-italic"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center">
-                        <label className="text-[9px] uppercase tracking-widest font-bold text-stone-400 px-1">Contraseña</label>
-                        <span className="text-[9px] uppercase tracking-widest font-bold text-brand-gold cursor-help hover:underline">Demo</span>
-                      </div>
-                      <div className="relative">
-                        <Lock className="absolute left-1 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-brown/30" />
-                        <input
-                          id="login-password"
-                          type="password"
-                          placeholder="••••••••"
-                          value={passwordInput}
-                          onChange={(e) => setPasswordInput(e.target.value)}
-                          required
-                          className="w-full border-b border-brand-brown/20 py-2.5 pl-8 pr-1 focus:border-brand-gold outline-hidden transition-colors text-base text-brand-brown tracking-widest placeholder:text-stone-300"
-                        />
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      id="login-submit-btn"
-                      className="w-full mt-6 bg-brand-brown text-white py-4 font-bold uppercase tracking-[0.25em] text-xs hover:bg-brand-gold transition-colors flex items-center justify-center gap-2 group cursor-pointer"
-                    >
-                      <span>Iniciar Sesión</span>
-                      <ChevronRight className="w-4 h-4 opacity-50 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </form>
-                ) : (
-                  /* CUSTOMER SIGN UP / REGISTRATION FORM */
-                  <form onSubmit={handleSignUp} className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-[9px] uppercase tracking-widest font-bold text-stone-400 px-1">Nombre Completo</label>
-                      <div className="relative">
-                        <UserIcon className="absolute left-1 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-brown/30" />
-                        <input
-                          id="register-name"
-                          type="text"
-                          placeholder="Tu primer nombre y apellido"
-                          value={nameInput}
-                          onChange={(e) => setNameInput(e.target.value)}
-                          required
-                          className="w-full border-b border-brand-brown/20 py-2 pl-8 pr-1 focus:border-brand-gold outline-hidden transition-colors text-base font-serif italic text-brand-brown placeholder:text-stone-300 placeholder:font-sans placeholder:not-italic"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[9px] uppercase tracking-widest font-bold text-stone-400 px-1">Correo Electrónico</label>
-                      <div className="relative">
-                        <Mail className="absolute left-1 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-brown/30" />
-                        <input
-                          id="register-email"
-                          type="email"
-                          placeholder="ejemplo@decorreo.com"
-                          value={emailInput}
-                          onChange={(e) => setEmailInput(e.target.value)}
-                          required
-                          className="w-full border-b border-brand-brown/20 py-2 pl-8 pr-1 focus:border-brand-gold outline-hidden transition-colors text-base font-serif italic text-brand-brown placeholder:text-stone-300 placeholder:font-sans placeholder:not-italic"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[9px] uppercase tracking-widest font-bold text-stone-400 px-1">Contraseña</label>
-                        <input
-                          id="register-password"
-                          type="password"
-                          placeholder="Min 4 car."
-                          value={passwordInput}
-                          onChange={(e) => setPasswordInput(e.target.value)}
-                          required
-                          className="w-full border-b border-brand-brown/20 py-2 px-1 focus:border-brand-gold outline-hidden transition-colors text-sm font-sans tracking-widest text-brand-brown placeholder:text-stone-300"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] uppercase tracking-widest font-bold text-stone-400 px-1">Confirmar</label>
-                        <input
-                          id="register-confirm-password"
-                          type="password"
-                          placeholder="Repite pass"
-                          value={confirmPasswordInput}
-                          onChange={(e) => setConfirmPasswordInput(e.target.value)}
-                          required
-                          className="w-full border-b border-brand-brown/20 py-2 px-1 focus:border-brand-gold outline-hidden transition-colors text-sm font-sans tracking-widest text-brand-brown placeholder:text-stone-300"
-                        />
-                      </div>
-                    </div>
-
-                    <p className="text-[10px] font-sans text-brand-gold font-bold bg-brand-bg border border-brand-gold/20 rounded-lg p-2 flex items-center justify-center gap-1.5 mt-2">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      Regalo de apertura: ¡50 puntos de bienvenida!
+                  <div className="flex items-center justify-center gap-2 mt-4">
+                    <div className="h-px w-6 bg-[#C5A059]" />
+                    <p className="font-sans text-[9px] tracking-[0.22em] text-[#C5A059] font-bold uppercase">
+                      Polanco · Ciudad de México
                     </p>
-
-                    <button
-                      type="submit"
-                      id="register-submit-btn"
-                      className="w-full mt-2 bg-brand-brown text-white py-4 font-bold uppercase tracking-[0.25em] text-xs hover:bg-brand-gold transition-colors flex items-center justify-center gap-2 group cursor-pointer"
-                    >
-                      Registrarme y Recibir Puntos
-                    </button>
-                  </form>
-                )}
-
-                {/* Sign up toggle for client role */}
-                {loginRole === 'client' && (
-                  <div className="text-center pt-2">
-                    <button
-                      id="toggle-register-btn"
-                      onClick={() => {
-                        setIsRegistering(!isRegistering);
-                        setAuthError(null);
-                      }}
-                      className="font-sans text-xs font-bold text-brand-brown border-b border-brand-brown/20 hover:border-brand-brown/60 pb-0.5 cursor-pointer"
-                    >
-                      {isRegistering ? '¿Ya eres miembro? Inicia Sesión' : '¿Aún no eres miembro? Regístrate aquí'}
-                    </button>
+                    <div className="h-px w-6 bg-[#C5A059]" />
                   </div>
-                )}
+                </div>
+
+                {/* Stamp preview + reward badge — desktop only (hidden on mobile to save space) */}
+                <div className="hidden md:flex flex-col gap-5 relative z-10 px-8 mt-auto pb-10">
+                  <div>
+                    <p className="font-sans text-[8px] font-extrabold uppercase tracking-[0.2em] text-white/40 mb-3">
+                      Tu planilla de sellos
+                    </p>
+                    <div className="grid grid-cols-5 gap-2">
+                      {Array.from({ length: 10 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
+                            i < 3
+                              ? 'border-[#C5A059] bg-[#C5A059]/20'
+                              : 'border-white/20 bg-white/5'
+                          }`}
+                        >
+                          <Coffee className={`w-4 h-4 ${i < 3 ? 'text-[#C5A059]' : 'text-white/25'}`} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Reward badge */}
+                  <div className="bg-[#1C2E25] border border-[#C5A059]/20 rounded-2xl p-4 flex items-start gap-3">
+                    <Gift className="w-5 h-5 text-[#C5A059] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-sans text-[11px] font-bold text-white leading-snug">¡Tu recompensa espera!</p>
+                      <p className="font-sans text-[10px] text-white/50 mt-0.5 leading-relaxed">
+                        Pieza artesanal o café de cortesía con 10 visitas.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile: stamp row (compact) */}
+                <div className="flex md:hidden items-center gap-1.5 px-8 mt-4 pb-6 relative z-10">
+                  <div className="flex gap-1.5 mr-2">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={`w-6 h-6 rounded-full border flex items-center justify-center ${
+                          i < 3
+                            ? 'border-[#C5A059] bg-[#C5A059]/20'
+                            : 'border-white/25 bg-white/5'
+                        }`}
+                      >
+                        <Coffee className={`w-3 h-3 ${i < 3 ? 'text-[#C5A059]' : 'text-white/20'}`} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mobile reward pill */}
+                <div className="flex md:hidden px-8 pb-8 relative z-10">
+                  <div className="bg-[#1C2E25]/80 border border-[#C5A059]/30 rounded-full px-3 py-1.5 flex items-center gap-2">
+                    <Gift className="w-3.5 h-3.5 text-[#C5A059]" />
+                    <p className="font-sans text-[10px] font-bold text-white">¡Tu recompensa espera!</p>
+                  </div>
+                </div>
+
+                {/* Curved bottom divider on mobile */}
+                <div className="absolute bottom-0 left-0 right-0 h-8 bg-[#FAF7F2] md:hidden"
+                  style={{ borderRadius: '50% 50% 0 0 / 100% 100% 0 0' }} />
               </div>
 
-              {/* Secure production login without demo selector list */}
+              {/* ── RIGHT / BOTTOM PANEL: Cream form panel ── */}
+              <div className="flex-1 bg-[#FAF7F2] flex flex-col justify-center px-8 py-10 md:px-14 md:py-0">
+                <div className="w-full max-w-sm mx-auto space-y-7">
+
+                  {/* Heading */}
+                  <div>
+                    <h2 className="font-serif font-bold text-3xl text-[#2D241E] leading-tight text-balance">
+                      {loginRole === 'client'
+                        ? (isRegistering ? 'Únete al Club' : 'Bienvenido de nuevo')
+                        : 'Acceso Staff'
+                      }
+                    </h2>
+                    <p className="font-sans text-xs text-[#2D241E]/50 mt-2 leading-relaxed">
+                      {loginRole === 'client'
+                        ? (isRegistering
+                            ? 'Regístrate hoy y recibe un obsequio especial de bienvenida.'
+                            : 'Inicia sesión para ver tu planilla y canjear tus visitas.')
+                        : 'Consola interna exclusiva para baristas y personal de servicio.'
+                      }
+                    </p>
+                  </div>
+
+                  {authError && (
+                    <div className="bg-red-50 border border-red-200 p-3 rounded-xl text-red-700 text-xs text-center font-serif italic">
+                      {authError}
+                    </div>
+                  )}
+
+                  {/* SIGN IN FORM */}
+                  {!isRegistering ? (
+                    <form onSubmit={handleLogin} className="space-y-5">
+
+                      {/* Email */}
+                      <div className="space-y-1.5">
+                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">
+                          Correo Electrónico
+                        </label>
+                        <div className="relative">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2D241E]/30" />
+                          <input
+                            id="login-email"
+                            type="email"
+                            placeholder={loginRole === 'client' ? 'ejemplo@correo.com' : 'staff@buttery.mx'}
+                            value={emailInput}
+                            onChange={(e) => setEmailInput(e.target.value)}
+                            required
+                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#2F4A3A] transition-colors shadow-sm"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Password */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">
+                            Contraseña
+                          </label>
+                          {loginRole === 'client' && (
+                            <span className="font-sans text-[9px] font-semibold text-[#C5A059] cursor-pointer hover:underline">
+                              ¿Olvidaste tu contraseña?
+                            </span>
+                          )}
+                        </div>
+                        <div className="relative">
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2D241E]/30" />
+                          <input
+                            id="login-password"
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="••••••••"
+                            value={passwordInput}
+                            onChange={(e) => setPasswordInput(e.target.value)}
+                            required
+                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 pl-11 pr-12 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#2F4A3A] transition-colors shadow-sm tracking-widest"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#2D241E]/30 hover:text-[#2D241E]/60 transition-colors cursor-pointer"
+                          >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Submit */}
+                      <button
+                        type="submit"
+                        id="login-submit-btn"
+                        className="w-full bg-[#2F4A3A] hover:bg-[#243d2e] text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-[0.22em] text-xs transition-colors flex items-center justify-center gap-2 group cursor-pointer shadow-md mt-2"
+                      >
+                        <span>Iniciar Sesión</span>
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                      </button>
+                    </form>
+                  ) : (
+                    /* REGISTRATION FORM */
+                    <form onSubmit={handleSignUp} className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">Nombre Completo</label>
+                        <div className="relative">
+                          <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2D241E]/30" />
+                          <input
+                            id="register-name"
+                            type="text"
+                            placeholder="Tu primer nombre y apellido"
+                            value={nameInput}
+                            onChange={(e) => setNameInput(e.target.value)}
+                            required
+                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#2F4A3A] transition-colors shadow-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">Correo Electrónico</label>
+                        <div className="relative">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2D241E]/30" />
+                          <input
+                            id="register-email"
+                            type="email"
+                            placeholder="ejemplo@correo.com"
+                            value={emailInput}
+                            onChange={(e) => setEmailInput(e.target.value)}
+                            required
+                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#2F4A3A] transition-colors shadow-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">Contraseña</label>
+                          <input
+                            id="register-password"
+                            type="password"
+                            placeholder="Min 4 car."
+                            value={passwordInput}
+                            onChange={(e) => setPasswordInput(e.target.value)}
+                            required
+                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 px-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#2F4A3A] transition-colors shadow-sm tracking-widest"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">Confirmar</label>
+                          <input
+                            id="register-confirm-password"
+                            type="password"
+                            placeholder="Repite pass"
+                            value={confirmPasswordInput}
+                            onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                            required
+                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 px-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#2F4A3A] transition-colors shadow-sm tracking-widest"
+                          />
+                        </div>
+                      </div>
+
+                      <p className="text-[10px] font-sans text-[#C5A059] font-bold bg-[#C5A059]/10 border border-[#C5A059]/20 rounded-xl p-3 flex items-center justify-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Regalo de apertura: ¡puntos de bienvenida!
+                      </p>
+
+                      <button
+                        type="submit"
+                        id="register-submit-btn"
+                        className="w-full bg-[#2F4A3A] hover:bg-[#243d2e] text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-[0.22em] text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                      >
+                        Registrarme y Recibir Puntos
+                      </button>
+                    </form>
+                  )}
+
+                  {/* Register / Login toggle */}
+                  {loginRole === 'client' && (
+                    <p className="text-center font-sans text-xs text-[#2D241E]/50">
+                      {isRegistering ? '¿Ya eres miembro? ' : '¿Aún no eres miembro? '}
+                      <button
+                        id="toggle-register-btn"
+                        onClick={() => { setIsRegistering(!isRegistering); setAuthError(null); }}
+                        className="font-bold text-[#2D241E] hover:underline cursor-pointer"
+                      >
+                        {isRegistering ? 'Inicia Sesión' : 'Regístrate aquí'}
+                      </button>
+                    </p>
+                  )}
+
+                </div>
+              </div>
+
             </div>
           )}
 
