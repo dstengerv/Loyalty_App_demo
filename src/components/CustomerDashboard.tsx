@@ -123,8 +123,8 @@ export default function CustomerDashboard({
 
       {/* Card Tab */}
       {activeTab === 'card' && (
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto px-5 space-y-5 pb-4">
+        <div className="flex-1 flex flex-col justify-between overflow-hidden">
+          <div className="overflow-y-auto px-5 space-y-5 pb-2">
 
             {/* Banner card with logo overlay */}
             {/* Outer wrapper allows the logo circle to overflow the banner bottom */}
