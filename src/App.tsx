@@ -4,7 +4,7 @@ import {
   Mail, 
   User as UserIcon, 
   Sparkles, 
-  Coffee, 
+ 
   ChevronRight, 
   QrCode, 
   CheckCircle,
@@ -1048,7 +1048,7 @@ export default function App() {
                     src="/blanco-yoga-logo.png"
                     alt="Blanco Yoga"
                     className="w-48 object-contain select-none"
-                    style={{ filter: 'brightness(0) invert(1)' }}
+                    style={{ mixBlendMode: 'multiply' }}
                     referrerPolicy="no-referrer"
                   />
                   <div className="flex items-center justify-center gap-2 mt-5">
@@ -1076,6 +1076,10 @@ export default function App() {
                               : 'border-white/20 bg-white/5'
                           }`}
                         >
+                          <svg viewBox="0 0 24 24" className={`w-5 h-5 ${i < 3 ? 'text-white' : 'text-white/25'}`} fill="currentColor" aria-hidden="true">
+                            <circle cx="12" cy="3.5" r="1.5" />
+                            <path d="M10 8.5c0-.83.67-1.5 1.5-1.5h1c.83 0 1.5.67 1.5 1.5v3l2.5 2.5-1.06 1.06L13 13.12V18l1.5 2.5h-1.75L12 18.8l-.75 1.7H9.5L11 18v-4.88l-2.44 2.44L7.5 14.5 10 12V8.5z" />
+                          </svg>
                         </div>
                       ))}
                     </div>
@@ -1105,7 +1109,10 @@ export default function App() {
                             : 'border-white/25 bg-white/5'
                         }`}
                       >
-                        <Coffee className={`w-3 h-3 ${i < 3 ? 'text-white' : 'text-white/20'}`} />
+                          <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 ${i < 3 ? 'text-white' : 'text-white/20'}`} fill="currentColor" aria-hidden="true">
+                            <circle cx="12" cy="3.5" r="1.5" />
+                            <path d="M10 8.5c0-.83.67-1.5 1.5-1.5h1c.83 0 1.5.67 1.5 1.5v3l2.5 2.5-1.06 1.06L13 13.12V18l1.5 2.5h-1.75L12 18.8l-.75 1.7H9.5L11 18v-4.88l-2.44 2.44L7.5 14.5 10 12V8.5z" />
+                          </svg>
                       </div>
                     ))}
                   </div>
