@@ -22,6 +22,7 @@ import CustomerDashboard from './components/CustomerDashboard';
 import StaffDashboard from './components/StaffDashboard';
 import QRCameraScanner from './components/QRCameraScanner';
 import butteryLogo from './assets/buttery_logo.svg';
+import blancoYogaLogo from './assets/blanco_yoga_logo.png';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 
 
@@ -966,10 +967,10 @@ export default function App() {
   const activeVouchers = vouchers.filter(v => !v.isUsed);
 
   // Shared brand logo — official Blanco Yoga wordmark
-  // Place the file at /public/blanco_yoga_logo.png
+  // Place the file at src/assets/blanco_yoga_logo.png
   const BrandLogo = ({ inverted = false }: { inverted?: boolean }) => (
     <img
-      src="/blanco_yoga_logo.png"
+      src={blancoYogaLogo}
       alt="Blanco Yoga"
       className="h-12 md:h-14 w-auto object-contain select-none"
       style={inverted ? { filter: 'brightness(0) invert(1)' } : undefined}
