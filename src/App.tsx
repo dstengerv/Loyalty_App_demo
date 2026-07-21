@@ -4,7 +4,7 @@ import {
   Mail, 
   User as UserIcon, 
   Sparkles, 
-  Coffee, 
+ 
   ChevronRight, 
   QrCode, 
   CheckCircle,
@@ -113,19 +113,19 @@ export default function App() {
             .maybeSingle();
 
           if (!settingsError && dbSettings) {
-            setStampSymbol(dbSettings.stamp_symbol || '🥐');
-            setBrandBrown(dbSettings.brand_brown || '#2D241E');
-            setBrandGold(dbSettings.brand_gold || '#C5A059');
-            setBrandBg(dbSettings.brand_bg || '#FAF7F2');
+                    setStampSymbol(dbSettings.stamp_symbol || '🧘');
+                    setBrandBrown(dbSettings.brand_brown || '#1C1C1C');
+                    setBrandGold(dbSettings.brand_gold || '#5A8C7C');
+                    setBrandBg(dbSettings.brand_bg || '#FFFFFF');
             setSettingsPin(dbSettings.settings_pin || '1234');
             setLogoUrl(dbSettings.logo_url || '');
             setLogoHeight(dbSettings.logo_height !== undefined && dbSettings.logo_height !== null ? Number(dbSettings.logo_height) : 40);
             setCardBgUrl(dbSettings.card_bg_url || 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80');
 
-            localStorage.setItem('buttery_stamp_symbol', dbSettings.stamp_symbol || '🥐');
-            localStorage.setItem('buttery_brand_brown', dbSettings.brand_brown || '#2D241E');
-            localStorage.setItem('buttery_brand_gold', dbSettings.brand_gold || '#C5A059');
-            localStorage.setItem('buttery_brand_bg', dbSettings.brand_bg || '#FAF7F2');
+                    localStorage.setItem('buttery_stamp_symbol', dbSettings.stamp_symbol || '🧘');
+                    localStorage.setItem('buttery_brand_brown', dbSettings.brand_brown || '#1C1C1C');
+                    localStorage.setItem('buttery_brand_gold', dbSettings.brand_gold || '#5A8C7C');
+                    localStorage.setItem('buttery_brand_bg', dbSettings.brand_bg || '#FFFFFF');
             localStorage.setItem('buttery_settings_pin', dbSettings.settings_pin || '1234');
             localStorage.setItem('buttery_logo_url', dbSettings.logo_url || '');
             localStorage.setItem('buttery_logo_height', (dbSettings.logo_height !== undefined && dbSettings.logo_height !== null ? dbSettings.logo_height : 40).toString());
@@ -218,10 +218,10 @@ export default function App() {
   }, [currentUser]);
 
   // Dynamic Brand Theme & Config States
-  const [stampSymbol, setStampSymbol] = useState<string>(() => localStorage.getItem('buttery_stamp_symbol') || '🥐');
-  const [brandBrown, setBrandBrown] = useState<string>(() => localStorage.getItem('buttery_brand_brown') || '#2D241E');
-  const [brandGold, setBrandGold] = useState<string>(() => localStorage.getItem('buttery_brand_gold') || '#C5A059');
-  const [brandBg, setBrandBg] = useState<string>(() => localStorage.getItem('buttery_brand_bg') || '#FAF7F2');
+  const [stampSymbol, setStampSymbol] = useState<string>(() => localStorage.getItem('buttery_stamp_symbol') || '🧘');
+  const [brandBrown, setBrandBrown] = useState<string>(() => localStorage.getItem('buttery_brand_brown') || '#1C1C1C');
+  const [brandGold, setBrandGold] = useState<string>(() => localStorage.getItem('buttery_brand_gold') || '#5A8C7C');
+  const [brandBg, setBrandBg] = useState<string>(() => localStorage.getItem('buttery_brand_bg') || '#FFFFFF');
   const [settingsPin, setSettingsPin] = useState<string>(() => localStorage.getItem('buttery_settings_pin') || '1234');
   const [logoUrl, setLogoUrl] = useState<string>(() => localStorage.getItem('buttery_logo_url') || '');
   const [logoHeight, setLogoHeight] = useState<number>(() => {
@@ -346,13 +346,13 @@ export default function App() {
     }
 
     const manifestData = {
-      name: "Buttery Loyalty Club",
-      short_name: "Buttery Loyalty",
-      description: "Tarjeta de fidelidad digital para Buttery Club Polanco",
+      name: "Blanco Yoga Loyalty",
+      short_name: "Blanco Yoga",
+      description: "Tarjeta de fidelidad digital para Blanco Yoga Ciudad de México",
       start_url: "/",
       display: "standalone",
-      background_color: brandBg || "#FAF7F2",
-      theme_color: brandGold || "#C5A059",
+      background_color: brandBg || "#FFFFFF",
+      theme_color: brandGold || "#5A8C7C",
       orientation: "portrait",
       icons: [
         {
@@ -954,8 +954,8 @@ export default function App() {
   const activeVouchers = vouchers.filter(v => !v.isUsed);
 
   return (
-      <div className={`font-sans selection:bg-amber-100 selection:text-amber-900 min-h-screen flex flex-col ${
-        currentUser?.role === 'client' ? 'bg-[#4A6B4A] items-center justify-start' : ''
+      <div className={`font-sans selection:bg-teal-100 selection:text-teal-900 min-h-screen flex flex-col ${
+        currentUser?.role === 'client' ? 'bg-[#5A8C7C] items-center justify-start' : ''
       }`}>
       
       {/* Toast Notification message */}
@@ -968,15 +968,15 @@ export default function App() {
               ? 'bg-rose-600 border-rose-500/30 text-white'
               : successToast.type === 'info'
                 ? 'bg-[#2D241E] border-white/10 text-white'
-                : 'bg-[#4A6B4A] border-white/10 text-white'
+                : 'bg-[#5A8C7C] border-white/10 text-white'
           }`}
         >
           {successToast.type === 'error' ? (
             <AlertCircle className="w-4 h-4 text-white/80 flex-shrink-0" />
           ) : successToast.type === 'info' ? (
-            <Info className="w-4 h-4 text-[#C5A059] flex-shrink-0" />
+            <Info className="w-4 h-4 text-white/80 flex-shrink-0" />
           ) : (
-            <CheckCircle className="w-4 h-4 text-[#C5A059] flex-shrink-0" />
+            <CheckCircle className="w-4 h-4 text-white/80 flex-shrink-0" />
           )}
           <span className="font-sans text-xs font-semibold tracking-wide">{successToast.message}</span>
         </div>
@@ -1038,25 +1038,25 @@ export default function App() {
             /* LOGIN & ACCOUNT PORTAL SCREENS */
             <div className="flex-1 flex flex-col md:flex-row min-h-screen">
 
-              {/* ── LEFT / TOP PANEL: Dark green brand panel ── */}
+              {/* ── LEFT / TOP PANEL: Blanco Yoga teal brand panel ── */}
               <div className="relative flex flex-col overflow-hidden md:w-[340px] md:min-h-full md:flex-shrink-0 min-h-[260px]"
-                style={{ background: 'linear-gradient(175deg, #6B8F6B 0%, #4A6B4A 55%, #3D5C3D 100%)' }}>
+                style={{ background: 'linear-gradient(175deg, #6BA898 0%, #5A8C7C 55%, #4A7A6A 100%)' }}>
 
                 {/* Logo + location */}
                 <div className="relative z-10 px-8 pt-10 pb-0 flex flex-col items-center text-center">
                   <img
-                    src="/buttery-logo-transparent.png"
-                    alt="Buttery"
-                    className="w-44 object-contain select-none"
+                    src="/blanco-yoga-logo.png"
+                    alt="Blanco Yoga"
+                    className="w-48 object-contain select-none"
                     style={{ mixBlendMode: 'multiply' }}
                     referrerPolicy="no-referrer"
                   />
-                  <div className="flex items-center justify-center gap-2 mt-4">
-                    <div className="h-px w-6 bg-[#C5A059]" />
-                    <p className="font-sans text-[9px] tracking-[0.22em] text-[#C5A059] font-bold uppercase">
-                      Polanco · Ciudad de México
+                  <div className="flex items-center justify-center gap-2 mt-5">
+                    <div className="h-px w-6 bg-white/50" />
+                    <p className="font-sans text-[9px] tracking-[0.22em] text-white/70 font-bold uppercase">
+                      Ciudad de México
                     </p>
-                    <div className="h-px w-6 bg-[#C5A059]" />
+                    <div className="h-px w-6 bg-white/50" />
                   </div>
                 </div>
 
@@ -1064,7 +1064,7 @@ export default function App() {
                 <div className="hidden md:flex flex-col gap-5 relative z-10 px-8 mt-auto pb-10">
                   <div>
                     <p className="font-sans text-[8px] font-extrabold uppercase tracking-[0.2em] text-white/40 mb-3">
-                      Tu planilla de sellos
+                      Tu planilla de visitas
                     </p>
                     <div className="grid grid-cols-5 gap-2">
                       {Array.from({ length: 10 }).map((_, i) => (
@@ -1072,23 +1072,26 @@ export default function App() {
                           key={i}
                           className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
                             i < 3
-                              ? 'border-[#C5A059] bg-[#C5A059]/20'
+                              ? 'border-white bg-white/20'
                               : 'border-white/20 bg-white/5'
                           }`}
                         >
-                          <Coffee className={`w-4 h-4 ${i < 3 ? 'text-[#C5A059]' : 'text-white/25'}`} />
+                          <svg viewBox="0 0 24 24" className={`w-5 h-5 ${i < 3 ? 'text-white' : 'text-white/25'}`} fill="currentColor" aria-hidden="true">
+                            <circle cx="12" cy="3.5" r="1.5" />
+                            <path d="M10 8.5c0-.83.67-1.5 1.5-1.5h1c.83 0 1.5.67 1.5 1.5v3l2.5 2.5-1.06 1.06L13 13.12V18l1.5 2.5h-1.75L12 18.8l-.75 1.7H9.5L11 18v-4.88l-2.44 2.44L7.5 14.5 10 12V8.5z" />
+                          </svg>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {/* Reward badge */}
-                  <div className="bg-[#3D5C3D] border border-[#C5A059]/20 rounded-2xl p-4 flex items-start gap-3">
-                    <Gift className="w-5 h-5 text-[#C5A059] flex-shrink-0 mt-0.5" />
+                  <div className="bg-[#4A7A6A] border border-white/20 rounded-2xl p-4 flex items-start gap-3">
+                    <Gift className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="font-sans text-[11px] font-bold text-white leading-snug">¡Tu recompensa espera!</p>
                       <p className="font-sans text-[10px] text-white/50 mt-0.5 leading-relaxed">
-                        Pieza artesanal o café de cortesía con 10 visitas.
+                        Clase gratuita de cortesía con 10 visitas.
                       </p>
                     </div>
                   </div>
@@ -1102,11 +1105,14 @@ export default function App() {
                         key={i}
                         className={`w-6 h-6 rounded-full border flex items-center justify-center ${
                           i < 3
-                            ? 'border-[#C5A059] bg-[#C5A059]/20'
+                            ? 'border-white bg-white/20'
                             : 'border-white/25 bg-white/5'
                         }`}
                       >
-                        <Coffee className={`w-3 h-3 ${i < 3 ? 'text-[#C5A059]' : 'text-white/20'}`} />
+                          <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 ${i < 3 ? 'text-white' : 'text-white/20'}`} fill="currentColor" aria-hidden="true">
+                            <circle cx="12" cy="3.5" r="1.5" />
+                            <path d="M10 8.5c0-.83.67-1.5 1.5-1.5h1c.83 0 1.5.67 1.5 1.5v3l2.5 2.5-1.06 1.06L13 13.12V18l1.5 2.5h-1.75L12 18.8l-.75 1.7H9.5L11 18v-4.88l-2.44 2.44L7.5 14.5 10 12V8.5z" />
+                          </svg>
                       </div>
                     ))}
                   </div>
@@ -1114,8 +1120,8 @@ export default function App() {
 
                 {/* Mobile reward pill */}
                 <div className="flex md:hidden px-8 pb-8 relative z-10">
-                  <div className="bg-[#3D5C3D]/80 border border-[#C5A059]/30 rounded-full px-3 py-1.5 flex items-center gap-2">
-                    <Gift className="w-3.5 h-3.5 text-[#C5A059]" />
+                  <div className="bg-[#4A7A6A]/80 border border-white/20 rounded-full px-3 py-1.5 flex items-center gap-2">
+                    <Gift className="w-3.5 h-3.5 text-white" />
                     <p className="font-sans text-[10px] font-bold text-white">¡Tu recompensa espera!</p>
                   </div>
                 </div>
@@ -1125,24 +1131,24 @@ export default function App() {
                   style={{ borderRadius: '50% 50% 0 0 / 100% 100% 0 0' }} />
               </div>
 
-              {/* ── RIGHT / BOTTOM PANEL: Cream form panel ── */}
-              <div className="flex-1 bg-[#FAF7F2] flex flex-col justify-center px-8 py-10 md:px-14 md:py-0">
+              {/* ── RIGHT / BOTTOM PANEL: White form panel ── */}
+              <div className="flex-1 bg-white flex flex-col justify-center px-8 py-10 md:px-14 md:py-0">
                 <div className="w-full max-w-sm mx-auto space-y-7">
 
                   {/* Heading */}
                   <div>
-                    <h2 className="font-serif font-bold text-3xl text-[#2D241E] leading-tight text-balance">
+                    <h2 className="font-serif font-bold text-3xl text-[#1C1C1C] leading-tight text-balance">
                       {loginRole === 'client'
                         ? (isRegistering ? 'Únete al Club' : 'Bienvenido de nuevo')
                         : 'Acceso Staff'
                       }
                     </h2>
-                    <p className="font-sans text-xs text-[#2D241E]/50 mt-2 leading-relaxed">
+                    <p className="font-sans text-xs text-[#1C1C1C]/50 mt-2 leading-relaxed">
                       {loginRole === 'client'
                         ? (isRegistering
-                            ? 'Regístrate hoy y recibe un obsequio especial de bienvenida.'
+                            ? 'Regístrate hoy y recibe un sello especial de bienvenida.'
                             : 'Inicia sesión para ver tu planilla y canjear tus visitas.')
-                        : 'Consola interna exclusiva para baristas y personal de servicio.'
+                        : 'Consola interna exclusiva para instructores y personal de Blanco Yoga.'
                       }
                     </p>
                   </div>
@@ -1159,19 +1165,19 @@ export default function App() {
 
                       {/* Email */}
                       <div className="space-y-1.5">
-                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">
+                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">
                           Correo Electrónico
                         </label>
                         <div className="relative">
-                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2D241E]/30" />
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1C1C]/30" />
                           <input
                             id="login-email"
                             type="email"
-                            placeholder={loginRole === 'client' ? 'ejemplo@correo.com' : 'staff@buttery.mx'}
+                            placeholder={loginRole === 'client' ? 'ejemplo@correo.com' : 'staff@blancoyoga.com'}
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
                             required
-                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#4A6B4A] transition-colors shadow-sm"
+                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm"
                           />
                         </div>
                       </div>
@@ -1179,17 +1185,17 @@ export default function App() {
                       {/* Password */}
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">
+                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">
                             Contraseña
                           </label>
                           {loginRole === 'client' && (
-                            <span className="font-sans text-[9px] font-semibold text-[#C5A059] cursor-pointer hover:underline">
+                            <span className="font-sans text-[9px] font-semibold text-[#5A8C7C] cursor-pointer hover:underline">
                               ¿Olvidaste tu contraseña?
                             </span>
                           )}
                         </div>
                         <div className="relative">
-                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2D241E]/30" />
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1C1C]/30" />
                           <input
                             id="login-password"
                             type={showPassword ? 'text' : 'password'}
@@ -1197,12 +1203,12 @@ export default function App() {
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             required
-                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 pl-11 pr-12 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#4A6B4A] transition-colors shadow-sm tracking-widest"
+                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 pl-11 pr-12 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm tracking-widest"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#2D241E]/30 hover:text-[#2D241E]/60 transition-colors cursor-pointer"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#1C1C1C]/30 hover:text-[#1C1C1C]/60 transition-colors cursor-pointer"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -1213,7 +1219,7 @@ export default function App() {
                       <button
                         type="submit"
                         id="login-submit-btn"
-                        className="w-full bg-[#4A6B4A] hover:bg-[#3D5C3D] text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-[0.22em] text-xs transition-colors flex items-center justify-center gap-2 group cursor-pointer shadow-md mt-2"
+                        className="w-full bg-[#5A8C7C] hover:bg-[#4A7A6A] text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-[0.22em] text-xs transition-colors flex items-center justify-center gap-2 group cursor-pointer shadow-md mt-2"
                       >
                         <span>Iniciar Sesión</span>
                         <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -1223,9 +1229,9 @@ export default function App() {
                     /* REGISTRATION FORM */
                     <form onSubmit={handleSignUp} className="space-y-4">
                       <div className="space-y-1.5">
-                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">Nombre Completo</label>
+                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">Nombre Completo</label>
                         <div className="relative">
-                          <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2D241E]/30" />
+                          <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1C1C]/30" />
                           <input
                             id="register-name"
                             type="text"
@@ -1233,15 +1239,15 @@ export default function App() {
                             value={nameInput}
                             onChange={(e) => setNameInput(e.target.value)}
                             required
-                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#4A6B4A] transition-colors shadow-sm"
+                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">Correo Electrónico</label>
+                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">Correo Electrónico</label>
                         <div className="relative">
-                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2D241E]/30" />
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1C1C]/30" />
                           <input
                             id="register-email"
                             type="email"
@@ -1249,14 +1255,14 @@ export default function App() {
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
                             required
-                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#4A6B4A] transition-colors shadow-sm"
+                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
-                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">Contraseña</label>
+                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">Contraseña</label>
                           <input
                             id="register-password"
                             type="password"
@@ -1264,11 +1270,11 @@ export default function App() {
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             required
-                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 px-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#4A6B4A] transition-colors shadow-sm tracking-widest"
+                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 px-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm tracking-widest"
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#2D241E]/50">Confirmar</label>
+                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">Confirmar</label>
                           <input
                             id="register-confirm-password"
                             type="password"
@@ -1276,34 +1282,34 @@ export default function App() {
                             value={confirmPasswordInput}
                             onChange={(e) => setConfirmPasswordInput(e.target.value)}
                             required
-                            className="w-full bg-white border border-[#2D241E]/12 rounded-2xl py-3.5 px-4 text-sm text-[#2D241E] placeholder:text-[#2D241E]/30 focus:outline-none focus:border-[#4A6B4A] transition-colors shadow-sm tracking-widest"
+                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 px-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm tracking-widest"
                           />
                         </div>
                       </div>
 
-                      <p className="text-[10px] font-sans text-[#C5A059] font-bold bg-[#C5A059]/10 border border-[#C5A059]/20 rounded-xl p-3 flex items-center justify-center gap-1.5">
+                      <p className="text-[10px] font-sans text-[#5A8C7C] font-bold bg-[#5A8C7C]/10 border border-[#5A8C7C]/20 rounded-xl p-3 flex items-center justify-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" />
-                        Regalo de apertura: ¡puntos de bienvenida!
+                        Sello de bienvenida: ¡tu primer visita registrada!
                       </p>
 
                       <button
                         type="submit"
                         id="register-submit-btn"
-                        className="w-full bg-[#4A6B4A] hover:bg-[#3D5C3D] text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-[0.22em] text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                        className="w-full bg-[#5A8C7C] hover:bg-[#4A7A6A] text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-[0.22em] text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
                       >
-                        Registrarme y Recibir Puntos
+                        Registrarme y Empezar
                       </button>
                     </form>
                   )}
 
                   {/* Register / Login toggle */}
                   {loginRole === 'client' && (
-                    <p className="text-center font-sans text-xs text-[#2D241E]/50">
+                    <p className="text-center font-sans text-xs text-[#1C1C1C]/50">
                       {isRegistering ? '¿Ya eres miembro? ' : '¿Aún no eres miembro? '}
                       <button
                         id="toggle-register-btn"
                         onClick={() => { setIsRegistering(!isRegistering); setAuthError(null); }}
-                        className="font-bold text-[#2D241E] hover:underline cursor-pointer"
+                        className="font-bold text-[#1C1C1C] hover:underline cursor-pointer"
                       >
                         {isRegistering ? 'Inicia Sesión' : 'Regístrate aquí'}
                       </button>
