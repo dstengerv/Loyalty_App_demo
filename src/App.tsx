@@ -1045,7 +1045,7 @@ export default function App() {
                 {/* Logo + location */}
                 <div className="relative z-10 px-8 pt-10 pb-0 flex flex-col items-center text-center">
                   <img
-                    src="/blanco-yoga-logo.gif"
+                    src="/blanco-yoga-logo.png"
                     alt="Blanco Yoga"
                     className="w-48 object-contain select-none"
                     style={{ filter: 'brightness(0) invert(1)' }}
