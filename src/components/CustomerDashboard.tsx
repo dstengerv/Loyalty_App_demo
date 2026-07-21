@@ -5,15 +5,22 @@ import {
   Clock,
   ArrowUpRight,
   ArrowDownLeft,
-  Coffee,
   Gift,
   Sparkles,
-  X
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { useEffect, useRef } from 'react';
 import { User, Transaction, RewardItem, QRVoucher } from '../types';
-import butteryLogo from '../assets/buttery_logo.svg';
+
+// Inline yoga figure SVG — reusable across stamp grid and empty states
+function YogaIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
+      <circle cx="12" cy="3.5" r="1.5" />
+      <path d="M10 8.5c0-.83.67-1.5 1.5-1.5h1c.83 0 1.5.67 1.5 1.5v3l2.5 2.5-1.06 1.06L13 13.12V18l1.5 2.5h-1.75L12 18.8l-.75 1.7H9.5L11 18v-4.88l-2.44 2.44L7.5 14.5 10 12V8.5z" />
+    </svg>
+  );
+}
 
 interface CustomerDashboardProps {
   user: User;
@@ -48,35 +55,36 @@ export default function CustomerDashboard({
       QRCode.toCanvas(qrCanvasRef.current, user.qrCode, {
         width: 220,
         margin: 2,
-        color: { dark: '#2D241E', light: '#FAF7F2' }
+        color: { dark: '#1C1C1C', light: '#FFFFFF' }
       });
     }
   }, [activeTab, user.qrCode]);
 
-  // Filter transactions for this user
   const userTransactions = transactions
     .filter((t) => t.userId === user.id)
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-  // Clamp the stamp count between 0 and 10
   const stampCount = Math.min(10, Math.max(0, user.points));
 
-  const DEFAULT_CARD_BG = 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80';
+  const DEFAULT_CARD_BG = 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=800&q=80';
   const bannerUrl = cardBgUrl || DEFAULT_CARD_BG;
 
   const isStampFilled = (idx: number) => stampCount >= idx + 1;
 
   return (
-    <div className="flex-1 flex flex-col h-full text-white overflow-hidden" style={{ background: 'linear-gradient(175deg, #6B8F6B 0%, #4A6B4A 50%, #3D5C3D 100%)' }}>
+    <div
+      className="flex-1 flex flex-col h-full text-white overflow-hidden"
+      style={{ background: 'linear-gradient(175deg, #6BA898 0%, #5A8C7C 50%, #4A7A6A 100%)' }}
+    >
 
       {/* Header */}
       <div className="px-5 pt-5 pb-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-[#C5A059] flex items-center justify-center shadow">
+          <div className="w-9 h-9 rounded-full bg-white/20 border border-white/30 flex items-center justify-center shadow">
             <span className="font-serif italic font-bold text-white text-sm leading-none">{user.name.charAt(0)}</span>
           </div>
           <div>
-            <p className="font-sans text-[8px] uppercase tracking-[0.2em] text-[#C5A059] font-bold leading-none">Tarjeta de Lealtad</p>
+            <p className="font-sans text-[8px] uppercase tracking-[0.2em] text-white/60 font-bold leading-none">Tarjeta de Lealtad</p>
             <h2 className="font-serif italic font-semibold text-white text-base mt-0.5 leading-none">{user.name}</h2>
           </div>
         </div>
@@ -94,39 +102,24 @@ export default function CustomerDashboard({
       {/* Tab bar */}
       <div className="mx-5 mb-4">
         <div className="bg-white/10 p-1 rounded-full flex border border-white/10">
-          <button
-            id="tab-card-btn"
-            onClick={() => setActiveTab('card')}
-            className={`flex-1 py-2 font-sans text-[10px] font-bold uppercase tracking-widest rounded-full cursor-pointer transition-all ${
-              activeTab === 'card'
-                ? 'bg-white text-[#4A6B4A] shadow'
-                : 'text-white/60 hover:text-white'
-            }`}
-          >
-            Tarjeta
-          </button>
-          <button
-            id="tab-history-btn"
-            onClick={() => setActiveTab('history')}
-            className={`flex-1 py-2 font-sans text-[10px] font-bold uppercase tracking-widest rounded-full cursor-pointer transition-all ${
-              activeTab === 'history'
-                ? 'bg-white text-[#4A6B4A] shadow'
-                : 'text-white/60 hover:text-white'
-            }`}
-          >
-            Historial
-          </button>
-          <button
-            id="tab-qr-btn"
-            onClick={() => setActiveTab('qr')}
-            className={`flex-1 py-2 font-sans text-[10px] font-bold uppercase tracking-widest rounded-full cursor-pointer transition-all ${
-              activeTab === 'qr'
-                ? 'bg-white text-[#4A6B4A] shadow'
-                : 'text-white/60 hover:text-white'
-            }`}
-          >
-            Mi QR
-          </button>
+          {(['card', 'history', 'qr'] as const).map((tab) => {
+            const labels = { card: 'Tarjeta', history: 'Historial', qr: 'Mi QR' };
+            const ids = { card: 'tab-card-btn', history: 'tab-history-btn', qr: 'tab-qr-btn' };
+            return (
+              <button
+                key={tab}
+                id={ids[tab]}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 py-2 font-sans text-[10px] font-bold uppercase tracking-widest rounded-full cursor-pointer transition-all ${
+                  activeTab === tab
+                    ? 'bg-white text-[#5A8C7C] shadow'
+                    : 'text-white/60 hover:text-white'
+                }`}
+              >
+                {labels[tab]}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -135,23 +128,18 @@ export default function CustomerDashboard({
         <div className="flex-1 flex flex-col justify-between overflow-hidden">
           <div className="overflow-y-auto px-5 space-y-5 pb-2">
 
-            {/* Banner card with logo overlay */}
-            {/* Outer wrapper allows the logo circle to overflow the banner bottom */}
+            {/* Banner */}
             <div className="relative w-full">
               <div className="relative w-full rounded-2xl overflow-hidden" style={{ aspectRatio: '16/7' }}>
-                {/* Background photo */}
                 <img
                   src={bannerUrl}
                   alt="Tarjeta de lealtad"
                   className="absolute inset-0 w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
-                {/* Dark overlay for contrast */}
                 <div className="absolute inset-0 bg-black/25" />
-
-                {/* Pill labels */}
                 <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-                  <span className="bg-[#C5A059] text-white font-sans text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
+                  <span className="bg-white/20 backdrop-blur-sm text-white font-sans text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-white/30">
                     Sello por visita
                   </span>
                   <span className="bg-black/50 backdrop-blur-sm text-white font-sans text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
@@ -159,57 +147,54 @@ export default function CustomerDashboard({
                   </span>
                 </div>
               </div>
-
-
             </div>
 
             {/* Reward label */}
             <div className="text-center">
               <p className="font-serif italic font-semibold text-white text-sm leading-snug">
-                Recompensa: <span className="text-[#C5A059]">¡Tu recompensa espera!</span>
+                Recompensa: <span className="text-white/70">¡Tu recompensa espera!</span>
               </p>
             </div>
 
-          {/* Stamp grid */}
-          <div className="space-y-3">
-            <div className="grid grid-cols-5 gap-2.5">
-              {Array.from({ length: 10 }).map((_, idx) => {
-                const filled = isStampFilled(idx);
-                const stampNum = idx + 1;
-                return (
-                  <div
-                    key={idx}
-                    className={`aspect-square rounded-full overflow-hidden flex items-center justify-center border-2 transition-all ${
-                      filled
-                        ? 'border-[#C5A059] bg-[#4A6B4A]'
-                        : 'border-white/20 bg-white/5'
-                    }`}
-                  >
-                    {filled ? (
-                      stampSymbol && (stampSymbol.startsWith('data:image/') || stampSymbol.startsWith('http')) ? (
-                        <img src={stampSymbol} alt="Sello" className="w-full h-full object-cover select-none" referrerPolicy="no-referrer" />
+            {/* Stamp grid */}
+            <div className="space-y-3">
+              <div className="grid grid-cols-5 gap-2.5">
+                {Array.from({ length: 10 }).map((_, idx) => {
+                  const filled = isStampFilled(idx);
+                  const stampNum = idx + 1;
+                  return (
+                    <div
+                      key={idx}
+                      className={`aspect-square rounded-full overflow-hidden flex items-center justify-center border-2 transition-all ${
+                        filled
+                          ? 'border-white bg-white/20'
+                          : 'border-white/20 bg-white/5'
+                      }`}
+                    >
+                      {filled ? (
+                        stampSymbol && (stampSymbol.startsWith('data:image/') || stampSymbol.startsWith('http')) ? (
+                          <img src={stampSymbol} alt="Sello" className="w-full h-full object-cover select-none" referrerPolicy="no-referrer" />
+                        ) : (
+                          <YogaIcon className="w-5 h-5 text-white" />
+                        )
                       ) : (
-                        <span className="text-lg leading-none select-none filter drop-shadow-sm">{stampSymbol || <Coffee className="w-5 h-5 text-[#C5A059]" />}</span>
-                      )
-                    ) : (
-                      stampNum === 10 ? (
-                        <Gift className="w-4 h-4 text-white/25" />
-                      ) : (
-                        <Coffee className="w-4 h-4 text-white/20" />
-                      )
-                    )}
-                  </div>
-                );
-              })}
+                        stampNum === 10 ? (
+                          <Gift className="w-4 h-4 text-white/25" />
+                        ) : (
+                          <YogaIcon className="w-4 h-4 text-white/25" />
+                        )
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-center font-sans text-[11px] text-white/60 font-medium">
+                {stampCount} de 10 sellos acumulados
+              </p>
             </div>
 
-            <p className="text-center font-sans text-[11px] text-white/60 font-medium">
-              {stampCount} de 10 sellos acumulados
-            </p>
           </div>
-
-          </div>
-
         </div>
       )}
 
@@ -217,7 +202,7 @@ export default function CustomerDashboard({
       {activeTab === 'history' && (
         <div className="flex-1 flex flex-col px-5 space-y-4 overflow-y-auto pb-32">
           <h3 className="font-serif text-base font-medium text-white flex items-center gap-2">
-            <History className="w-4 h-4 text-[#C5A059]" />
+            <History className="w-4 h-4 text-white/60" />
             Historial de Visitas
           </h3>
 
@@ -232,7 +217,7 @@ export default function CustomerDashboard({
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${
                       tx.type === 'earn'
-                        ? 'bg-[#C5A059]/15 text-[#C5A059] border-[#C5A059]/20'
+                        ? 'bg-white/15 text-white border-white/20'
                         : 'bg-white/8 text-white/40 border-white/10'
                     }`}>
                       {tx.type === 'earn' ? (
@@ -251,7 +236,7 @@ export default function CustomerDashboard({
                   </div>
 
                   <span className={`font-sans font-bold text-xs ${
-                    tx.type === 'earn' ? 'text-[#C5A059]' : 'text-white/40'
+                    tx.type === 'earn' ? 'text-white' : 'text-white/40'
                   }`}>
                     {tx.type === 'earn' ? '+' : '-'}{tx.points} {tx.points === 1 ? 'sello' : 'sellos'}
                   </span>
@@ -260,46 +245,40 @@ export default function CustomerDashboard({
             </div>
           ) : (
             <div className="text-center py-12 px-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center justify-center space-y-2">
-              <Coffee className="w-10 h-10 text-white/20 stroke-1" />
-              <p className="font-serif italic text-xs text-white/60">Aún no hay movimientos</p>
-              <p className="font-sans text-[10px] text-white/40 text-center">Tus primeras visitas y canjes de cortesía se listarán aquí.</p>
+              <YogaIcon className="w-10 h-10 text-white/20" />
+              <p className="font-serif italic text-xs text-white/60">{"Aún no hay movimientos"}</p>
+              <p className="font-sans text-[10px] text-white/40 text-center">Tus primeras visitas y canjes se listarán aquí.</p>
             </div>
           )}
         </div>
       )}
 
-
-
       {/* QR Tab */}
       {activeTab === 'qr' && (
         <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10 gap-6">
-          {/* Logo */}
           <img
-            src="/buttery-logo-transparent.png"
-            alt="Buttery"
+            src="/blanco-yoga-logo.png"
+            alt="Blanco Yoga"
             className="h-10 w-auto object-contain select-none"
-            style={{ mixBlendMode: 'multiply' }}
+            style={{ filter: 'brightness(0) invert(1)' }}
             referrerPolicy="no-referrer"
           />
 
-          {/* QR canvas on white card */}
           <div className="bg-white rounded-3xl px-6 pt-5 pb-6 flex flex-col items-center gap-4 shadow-2xl w-full max-w-xs">
             <div className="bg-stone-50 rounded-2xl p-3 border border-stone-100 shadow-inner">
               <canvas ref={qrCanvasRef} />
             </div>
 
-            {/* Name + code */}
             <div className="text-center space-y-1">
-              <p className="font-serif italic font-bold text-[#2D241E] text-base leading-snug">{user.name}</p>
-              <p className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#C5A059]">
+              <p className="font-serif italic font-bold text-[#1C1C1C] text-base leading-snug">{user.name}</p>
+              <p className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#5A8C7C]">
                 Código: {user.qrCode}
               </p>
             </div>
           </div>
 
-          {/* Instruction */}
           <p className="font-sans text-[11px] text-white/60 text-center leading-relaxed max-w-xs">
-            Muestra este código en caja al ordenar. El staff sumará tu sello de visita al instante.
+            Muestra este código al instructor al llegar. El staff sumará tu sello de visita al instante.
           </p>
         </div>
       )}
@@ -311,31 +290,27 @@ export default function CustomerDashboard({
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-6 animate-fadeIn"
         >
           <div
-            className="w-full max-w-sm bg-[#4A6B4A] rounded-[2.5rem] p-8 text-center space-y-6 flex flex-col items-center shadow-2xl border border-[#C5A059]/30 relative overflow-hidden"
+            className="w-full max-w-sm bg-[#4A7A6A] rounded-[2.5rem] p-8 text-center space-y-6 flex flex-col items-center shadow-2xl border border-white/20 relative overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#C5A059] via-yellow-400 to-[#C5A059]" />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-white/40" />
 
             <div className="relative my-2">
-              <div className="absolute inset-0 bg-[#C5A059]/15 rounded-full blur-xl scale-150 animate-pulse" />
-              <div className="w-24 h-24 bg-[#5C7A5C] rounded-full flex items-center justify-center shadow-lg border border-[#C5A059]/30 relative">
-                {stampSymbol && (stampSymbol.startsWith('data:image/') || stampSymbol.startsWith('http')) ? (
-                  <img src={stampSymbol} alt="Sello" className="w-14 h-14 object-contain select-none animate-pulse" referrerPolicy="no-referrer" />
-                ) : (
-                  <span className="text-5xl leading-none select-none animate-pulse">{stampSymbol || '🥐'}</span>
-                )}
+              <div className="absolute inset-0 bg-white/10 rounded-full blur-xl scale-150 animate-pulse" />
+              <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center shadow-lg border border-white/30 relative">
+                <YogaIcon className="w-12 h-12 text-white animate-pulse" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <span className="font-sans text-[9px] tracking-[0.25em] font-extrabold text-[#C5A059] uppercase block">
+              <span className="font-sans text-[9px] tracking-[0.25em] font-extrabold text-white/70 uppercase block">
                 Planilla Completada
               </span>
               <h3 className="font-serif italic text-2xl font-semibold text-white leading-tight">
-                ¡Felicidades, {user.name}!
+                {`¡Felicidades, ${user.name}!`}
               </h3>
               <p className="font-sans text-[11px] text-white/70 leading-relaxed max-w-xs mt-2">
-                Has reunido tus <strong>10 sellos</strong> de visita. Muestra esta pantalla al staff de <strong>Buttery Polanco</strong> para recibir tu pan o bebida de cortesía.
+                Has reunido tus <strong>10 sellos</strong> de visita. Muestra esta pantalla al staff de <strong>Blanco Yoga</strong> para recibir tu clase de cortesía.
               </p>
             </div>
 
@@ -343,9 +318,9 @@ export default function CustomerDashboard({
               <button
                 id="claim-reward-btn"
                 onClick={() => { if (onClaimCompletedCard) onClaimCompletedCard(); }}
-                className="w-full py-4 bg-[#C5A059] hover:bg-[#B38C46] text-white rounded-2xl font-sans text-xs font-bold tracking-widest uppercase shadow-md transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-4 bg-white hover:bg-white/90 text-[#5A8C7C] rounded-2xl font-sans text-xs font-bold tracking-widest uppercase shadow-md transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
               >
-                <Sparkles className="w-4 h-4 text-white fill-white" />
+                <Sparkles className="w-4 h-4 text-[#5A8C7C] fill-[#5A8C7C]" />
                 Registrar Canje con el Staff
               </button>
 
