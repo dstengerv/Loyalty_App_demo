@@ -965,23 +965,17 @@ export default function App() {
 
   const activeVouchers = vouchers.filter(v => !v.isUsed);
 
-  // Shared brand logo mark (small black square + lotus glyph + wordmark)
+  // Shared brand logo — official Blanco Yoga wordmark
+  // Place the file at /public/blanco_yoga_logo.png
   const BrandLogo = ({ inverted = false }: { inverted?: boolean }) => (
-    <div className="flex items-center gap-3 select-none">
-      <div className={`w-10 h-10 rounded-md border flex items-center justify-center flex-shrink-0 ${
-        inverted ? 'border-white/40 bg-transparent' : 'border-[#0A0A0A] bg-white'
-      }`}>
-        <svg viewBox="0 0 24 24" className={`w-5 h-5 ${inverted ? 'text-white' : 'text-[#0A0A0A]'}`} fill="currentColor" aria-hidden="true">
-          <circle cx="12" cy="3.5" r="1.5" />
-          <path d="M10 8.5c0-.83.67-1.5 1.5-1.5h1c.83 0 1.5.67 1.5 1.5v3l2.5 2.5-1.06 1.06L13 13.12V18l1.5 2.5h-1.75L12 18.8l-.75 1.7H9.5L11 18v-4.88l-2.44 2.44L7.5 14.5 10 12V8.5z" />
-        </svg>
-      </div>
-      <span className={`font-sans text-sm font-bold tracking-[0.35em] uppercase ${
-        inverted ? 'text-white' : 'text-[#0A0A0A]'
-      }`}>
-        Blanco Yoga
-      </span>
-    </div>
+    <img
+      src="/blanco_yoga_logo.png"
+      alt="Blanco Yoga"
+      className="h-12 md:h-14 w-auto object-contain select-none"
+      style={inverted ? { filter: 'brightness(0) invert(1)' } : undefined}
+      referrerPolicy="no-referrer"
+      draggable={false}
+    />
   );
 
   return (
