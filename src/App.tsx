@@ -6,6 +6,7 @@ import {
   Sparkles, 
  
   ChevronRight, 
+  ArrowRight,
   QrCode, 
   CheckCircle,
   Clock,
@@ -21,6 +22,7 @@ import CustomerDashboard from './components/CustomerDashboard';
 import StaffDashboard from './components/StaffDashboard';
 import QRCameraScanner from './components/QRCameraScanner';
 import butteryLogo from './assets/buttery_logo.svg';
+import blancoYogaLogo from './assets/blanco_yoga_logo.png';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 
 
@@ -946,6 +948,17 @@ export default function App() {
     }
   };
 
+  // Toggle helper for the Iniciar sesión / Registrarse tabs
+  const switchAuthTab = (registering: boolean) => {
+    setIsRegistering(registering);
+    setAuthError(null);
+    setNameInput('');
+    setEmailInput('');
+    setPasswordInput('');
+    setConfirmPasswordInput('');
+    setShowPassword(false);
+  };
+
   // Helper arrays for simulator to run in QR camera scanner modal
   const simulatedClientQRs = users
     .filter(u => u.role === 'client')
@@ -953,8 +966,21 @@ export default function App() {
 
   const activeVouchers = vouchers.filter(v => !v.isUsed);
 
+  // Shared brand logo — official Blanco Yoga wordmark
+  // Place the file at src/assets/blanco_yoga_logo.png
+  const BrandLogo = ({ inverted = false }: { inverted?: boolean }) => (
+    <img
+      src={blancoYogaLogo}
+      alt="Blanco Yoga"
+      className="h-12 md:h-14 w-auto object-contain select-none"
+      style={inverted ? { filter: 'brightness(0) invert(1)' } : undefined}
+      referrerPolicy="no-referrer"
+      draggable={false}
+    />
+  );
+
   return (
-      <div className={`font-sans selection:bg-teal-100 selection:text-teal-900 min-h-screen flex flex-col ${
+      <div className={`font-sans selection:bg-neutral-200 selection:text-neutral-900 min-h-screen flex flex-col ${
         currentUser?.role === 'client' ? 'bg-[#5A8C7C] items-center justify-start' : ''
       }`}>
       
@@ -968,7 +994,7 @@ export default function App() {
               ? 'bg-rose-600 border-rose-500/30 text-white'
               : successToast.type === 'info'
                 ? 'bg-[#2D241E] border-white/10 text-white'
-                : 'bg-[#5A8C7C] border-white/10 text-white'
+                : 'bg-[#0A0A0A] border-white/10 text-white'
           }`}
         >
           {successToast.type === 'error' ? (
@@ -1035,126 +1061,112 @@ export default function App() {
               />
             )
           ) : (
-            /* LOGIN & ACCOUNT PORTAL SCREENS */
-            <div className="flex-1 flex flex-col md:flex-row min-h-screen">
+            /* ══════════════════════════════════════════════════════════
+               LOGIN & ACCOUNT PORTAL — Blanco Yoga minimal B/W design
+               Mobile: single white column. Desktop: black hero + form.
+               ══════════════════════════════════════════════════════════ */
+            <div className="flex-1 flex min-h-screen bg-[#FAFAFA] md:bg-white">
 
-              {/* ── LEFT / TOP PANEL: Blanco Yoga teal brand panel ── */}
-              <div className="relative flex flex-col overflow-hidden md:w-[340px] md:min-h-full md:flex-shrink-0 min-h-[260px]"
-                style={{ background: 'linear-gradient(175deg, #6BA898 0%, #5A8C7C 55%, #4A7A6A 100%)' }}>
+              {/* ── LEFT PANEL (desktop only): black editorial hero ── */}
+              <div className="hidden md:flex md:w-1/2 bg-[#0A0A0A] text-white flex-col justify-between p-12 lg:p-16 relative">
 
-                {/* Logo + location */}
-                <div className="relative z-10 px-8 pt-10 pb-0 flex flex-col items-center text-center">
-                  <img
-                    src="/blanco-yoga-logo.png"
-                    alt="Blanco Yoga"
-                    className="w-48 object-contain select-none"
-                    style={{ mixBlendMode: 'multiply' }}
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="flex items-center justify-center gap-2 mt-5">
-                    <div className="h-px w-6 bg-white/50" />
-                    <p className="font-sans text-[9px] tracking-[0.22em] text-white/70 font-bold uppercase">
-                      Ciudad de México
+                {/* Top: logo */}
+                <BrandLogo inverted />
+
+                {/* Middle: hero copy */}
+                <div className="max-w-md">
+                  <p className="font-sans text-[10px] font-bold uppercase tracking-[0.35em] text-white/60 mb-8">
+                    Condesa &middot; Zoom Live &middot; On Demand
+                  </p>
+                  <h1 className="font-sans font-semibold text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white">
+                    Respira.<br />
+                    Practica.<br />
+                    Regresa.
+                  </h1>
+                  <p className="font-sans text-sm text-white/60 mt-8 leading-relaxed max-w-sm">
+                    Reserva tu lugar en el mat, gestiona tu paquete y practica
+                    desde donde estés — en el estudio o en línea.
+                  </p>
+
+                  {/* Next class card */}
+                  <div className="mt-12 border-l-2 border-white/40 pl-5">
+                    <p className="font-sans text-[9px] font-bold uppercase tracking-[0.3em] text-white/50 mb-2">
+                      Tu próxima clase
                     </p>
-                    <div className="h-px w-6 bg-white/50" />
-                  </div>
-                </div>
-
-                {/* Stamp preview + reward badge — desktop only (hidden on mobile to save space) */}
-                <div className="hidden md:flex flex-col gap-5 relative z-10 px-8 mt-auto pb-10">
-                  <div>
-                    <p className="font-sans text-[8px] font-extrabold uppercase tracking-[0.2em] text-white/40 mb-3">
-                      Tu planilla de visitas
+                    <p className="font-sans text-lg font-semibold text-white">
+                      Vinyasa Flow &middot; 07:00 AM
                     </p>
-                    <div className="grid grid-cols-5 gap-2">
-                      {Array.from({ length: 10 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
-                            i < 3
-                              ? 'border-white bg-white/20'
-                              : 'border-white/20 bg-white/5'
-                          }`}
-                        >
-                          <svg viewBox="0 0 24 24" className={`w-5 h-5 ${i < 3 ? 'text-white' : 'text-white/25'}`} fill="currentColor" aria-hidden="true">
-                            <circle cx="12" cy="3.5" r="1.5" />
-                            <path d="M10 8.5c0-.83.67-1.5 1.5-1.5h1c.83 0 1.5.67 1.5 1.5v3l2.5 2.5-1.06 1.06L13 13.12V18l1.5 2.5h-1.75L12 18.8l-.75 1.7H9.5L11 18v-4.88l-2.44 2.44L7.5 14.5 10 12V8.5z" />
-                          </svg>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Reward badge */}
-                  <div className="bg-[#4A7A6A] border border-white/20 rounded-2xl p-4 flex items-start gap-3">
-                    <Gift className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-sans text-[11px] font-bold text-white leading-snug">¡Tu recompensa espera!</p>
-                      <p className="font-sans text-[10px] text-white/50 mt-0.5 leading-relaxed">
-                        Clase gratuita de cortesía con 10 visitas.
-                      </p>
-                    </div>
+                    <p className="font-sans text-xs text-white/50 mt-1">
+                      Mañana &middot; Condesa &middot; con Ana
+                    </p>
                   </div>
                 </div>
 
-                {/* Mobile: stamp row (compact) */}
-                <div className="flex md:hidden items-center gap-1.5 px-8 mt-4 pb-6 relative z-10">
-                  <div className="flex gap-1.5 mr-2">
-                    {Array.from({ length: 10 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-6 h-6 rounded-full border flex items-center justify-center ${
-                          i < 3
-                            ? 'border-white bg-white/20'
-                            : 'border-white/25 bg-white/5'
-                        }`}
-                      >
-                          <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 ${i < 3 ? 'text-white' : 'text-white/20'}`} fill="currentColor" aria-hidden="true">
-                            <circle cx="12" cy="3.5" r="1.5" />
-                            <path d="M10 8.5c0-.83.67-1.5 1.5-1.5h1c.83 0 1.5.67 1.5 1.5v3l2.5 2.5-1.06 1.06L13 13.12V18l1.5 2.5h-1.75L12 18.8l-.75 1.7H9.5L11 18v-4.88l-2.44 2.44L7.5 14.5 10 12V8.5z" />
-                          </svg>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Mobile reward pill */}
-                <div className="flex md:hidden px-8 pb-8 relative z-10">
-                  <div className="bg-[#4A7A6A]/80 border border-white/20 rounded-full px-3 py-1.5 flex items-center gap-2">
-                    <Gift className="w-3.5 h-3.5 text-white" />
-                    <p className="font-sans text-[10px] font-bold text-white">¡Tu recompensa espera!</p>
-                  </div>
-                </div>
-
-                {/* Curved bottom divider on mobile */}
-                <div className="absolute bottom-0 left-0 right-0 h-8 bg-brand-bg md:hidden"
-                  style={{ borderRadius: '50% 50% 0 0 / 100% 100% 0 0' }} />
+                {/* Bottom: footer */}
+                <p className="font-sans text-[9px] font-bold uppercase tracking-[0.3em] text-white/40">
+                  Est. 2015 &middot; Ciudad de México
+                </p>
               </div>
 
-              {/* ── RIGHT / BOTTOM PANEL: White form panel ── */}
-              <div className="flex-1 bg-white flex flex-col justify-center px-8 py-10 md:px-14 md:py-0">
-                <div className="w-full max-w-sm mx-auto space-y-7">
+              {/* ── RIGHT PANEL / MOBILE FULL SCREEN: white form ── */}
+              <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-16 lg:px-24 bg-[#FAFAFA] md:bg-white">
+                <div className="w-full max-w-md mx-auto md:mx-0">
+
+                  {/* Mobile-only logo (desktop shows it in the hero panel) */}
+                  <div className="md:hidden mb-10">
+                    <BrandLogo />
+                  </div>
 
                   {/* Heading */}
-                  <div>
-                    <h2 className="font-serif font-bold text-3xl text-[#1C1C1C] leading-tight text-balance">
+                  <div className="mb-7">
+                    <h2 className="font-sans font-semibold text-[2rem] md:text-4xl tracking-tight text-[#0A0A0A] leading-tight">
                       {loginRole === 'client'
-                        ? (isRegistering ? 'Únete al Club' : 'Bienvenido de nuevo')
+                        ? (isRegistering ? 'Únete al estudio' : 'Bienvenida de vuelta')
                         : 'Acceso Staff'
                       }
                     </h2>
-                    <p className="font-sans text-xs text-[#1C1C1C]/50 mt-2 leading-relaxed">
+                    <p className="font-sans text-sm text-[#0A0A0A]/55 mt-2">
                       {loginRole === 'client'
                         ? (isRegistering
-                            ? 'Regístrate hoy y recibe un sello especial de bienvenida.'
-                            : 'Inicia sesión para ver tu planilla y canjear tus visitas.')
-                        : 'Consola interna exclusiva para instructores y personal de Blanco Yoga.'
+                            ? 'Crea tu cuenta y estrena tu tarjeta con un sello de bienvenida.'
+                            : 'Inicia sesión para reservar tu próxima clase.')
+                        : 'Consola interna exclusiva para instructores y personal.'
                       }
                     </p>
                   </div>
 
+                  {/* Segmented tab toggle (clients only) */}
+                  {loginRole === 'client' && (
+                    <div className="bg-[#EFEFEF] rounded-xl p-1 flex mb-7">
+                      <button
+                        type="button"
+                        id="tab-login"
+                        onClick={() => switchAuthTab(false)}
+                        className={`flex-1 py-2.5 rounded-lg font-sans text-sm font-semibold transition-all cursor-pointer ${
+                          !isRegistering
+                            ? 'bg-white text-[#0A0A0A] shadow-sm'
+                            : 'bg-transparent text-[#0A0A0A]/50 hover:text-[#0A0A0A]/70'
+                        }`}
+                      >
+                        Iniciar sesión
+                      </button>
+                      <button
+                        type="button"
+                        id="tab-register"
+                        onClick={() => switchAuthTab(true)}
+                        className={`flex-1 py-2.5 rounded-lg font-sans text-sm font-semibold transition-all cursor-pointer ${
+                          isRegistering
+                            ? 'bg-white text-[#0A0A0A] shadow-sm'
+                            : 'bg-transparent text-[#0A0A0A]/50 hover:text-[#0A0A0A]/70'
+                        }`}
+                      >
+                        Registrarse
+                      </button>
+                    </div>
+                  )}
+
                   {authError && (
-                    <div className="bg-red-50 border border-red-200 p-3 rounded-xl text-red-700 text-xs text-center font-serif italic">
+                    <div className="bg-red-50 border border-red-200 p-3 rounded-xl text-red-700 text-xs text-center font-sans mb-5">
                       {authError}
                     </div>
                   )}
@@ -1165,50 +1177,47 @@ export default function App() {
 
                       {/* Email */}
                       <div className="space-y-1.5">
-                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">
-                          Correo Electrónico
+                        <label htmlFor="login-email" className="font-sans text-sm font-semibold text-[#0A0A0A]">
+                          Correo electrónico
                         </label>
-                        <div className="relative">
-                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1C1C]/30" />
-                          <input
-                            id="login-email"
-                            type="email"
-                            placeholder={loginRole === 'client' ? 'ejemplo@correo.com' : 'staff@blancoyoga.com'}
-                            value={emailInput}
-                            onChange={(e) => setEmailInput(e.target.value)}
-                            required
-                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm"
-                          />
-                        </div>
+                        <input
+                          id="login-email"
+                          type="email"
+                          placeholder="tu@correo.com"
+                          value={emailInput}
+                          onChange={(e) => setEmailInput(e.target.value)}
+                          required
+                          className="w-full bg-white border border-[#0A0A0A]/15 rounded-xl py-3.5 px-4 text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/35 focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                        />
                       </div>
 
                       {/* Password */}
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">
+                          <label htmlFor="login-password" className="font-sans text-sm font-semibold text-[#0A0A0A]">
                             Contraseña
                           </label>
                           {loginRole === 'client' && (
-                            <span className="font-sans text-[9px] font-semibold text-[#5A8C7C] cursor-pointer hover:underline">
+                            <span className="font-sans text-xs text-[#0A0A0A]/55 cursor-pointer hover:text-[#0A0A0A] hover:underline transition-colors">
                               ¿Olvidaste tu contraseña?
                             </span>
                           )}
                         </div>
                         <div className="relative">
-                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1C1C]/30" />
                           <input
                             id="login-password"
                             type={showPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
+                            placeholder="Tu contraseña"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             required
-                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 pl-11 pr-12 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm tracking-widest"
+                            className="w-full bg-white border border-[#0A0A0A]/15 rounded-xl py-3.5 pl-4 pr-12 text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/35 focus:outline-none focus:border-[#0A0A0A] transition-colors"
                           />
                           <button
                             type="button"
+                            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#1C1C1C]/30 hover:text-[#1C1C1C]/60 transition-colors cursor-pointer"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#0A0A0A]/35 hover:text-[#0A0A0A]/70 transition-colors cursor-pointer"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -1219,101 +1228,126 @@ export default function App() {
                       <button
                         type="submit"
                         id="login-submit-btn"
-                        className="w-full bg-[#5A8C7C] hover:bg-[#4A7A6A] text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-[0.22em] text-xs transition-colors flex items-center justify-center gap-2 group cursor-pointer shadow-md mt-2"
+                        className="w-full bg-[#0A0A0A] hover:bg-[#2A2A2A] text-white py-4 rounded-xl font-sans font-bold uppercase tracking-[0.18em] text-xs transition-colors cursor-pointer mt-1"
                       >
-                        <span>Iniciar Sesión</span>
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                        Iniciar Sesión
                       </button>
+
+                      {loginRole === 'client' && (
+                        <>
+                          {/* Divider */}
+                          <div className="flex items-center gap-4 py-1">
+                            <div className="h-px flex-1 bg-[#0A0A0A]/10" />
+                            <span className="font-sans text-xs text-[#0A0A0A]/40 font-medium">O</span>
+                            <div className="h-px flex-1 bg-[#0A0A0A]/10" />
+                          </div>
+
+                          {/* Ver mi tarjeta */}
+                          <button
+                            type="button"
+                            id="view-card-btn"
+                            onClick={() => showToast('Inicia sesión con tu cuenta para abrir tu tarjeta digital.', 'info')}
+                            className="w-full bg-white border border-[#0A0A0A]/15 hover:border-[#0A0A0A]/40 text-[#0A0A0A] py-3.5 rounded-xl font-sans font-semibold text-sm transition-colors flex items-center justify-center gap-2 group cursor-pointer"
+                          >
+                            <span>Ver mi tarjeta</span>
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                          </button>
+
+                          {/* Terms footer */}
+                          <p className="text-center font-sans text-xs text-[#0A0A0A]/45 pt-2 leading-relaxed">
+                            Al continuar aceptas nuestros{' '}
+                            <span className="underline underline-offset-2 cursor-pointer hover:text-[#0A0A0A] transition-colors">Términos</span>
+                            {' '}y{' '}
+                            <span className="underline underline-offset-2 cursor-pointer hover:text-[#0A0A0A] transition-colors">Política de Privacidad</span>.
+                          </p>
+                        </>
+                      )}
                     </form>
                   ) : (
                     /* REGISTRATION FORM */
-                    <form onSubmit={handleSignUp} className="space-y-4">
+                    <form onSubmit={handleSignUp} className="space-y-5">
                       <div className="space-y-1.5">
-                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">Nombre Completo</label>
-                        <div className="relative">
-                          <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1C1C]/30" />
-                          <input
-                            id="register-name"
-                            type="text"
-                            placeholder="Tu primer nombre y apellido"
-                            value={nameInput}
-                            onChange={(e) => setNameInput(e.target.value)}
-                            required
-                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm"
-                          />
-                        </div>
+                        <label htmlFor="register-name" className="font-sans text-sm font-semibold text-[#0A0A0A]">
+                          Nombre completo
+                        </label>
+                        <input
+                          id="register-name"
+                          type="text"
+                          placeholder="Tu nombre y apellido"
+                          value={nameInput}
+                          onChange={(e) => setNameInput(e.target.value)}
+                          required
+                          className="w-full bg-white border border-[#0A0A0A]/15 rounded-xl py-3.5 px-4 text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/35 focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                        />
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">Correo Electrónico</label>
-                        <div className="relative">
-                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1C1C]/30" />
-                          <input
-                            id="register-email"
-                            type="email"
-                            placeholder="ejemplo@correo.com"
-                            value={emailInput}
-                            onChange={(e) => setEmailInput(e.target.value)}
-                            required
-                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm"
-                          />
-                        </div>
+                        <label htmlFor="register-email" className="font-sans text-sm font-semibold text-[#0A0A0A]">
+                          Correo electrónico
+                        </label>
+                        <input
+                          id="register-email"
+                          type="email"
+                          placeholder="tu@correo.com"
+                          value={emailInput}
+                          onChange={(e) => setEmailInput(e.target.value)}
+                          required
+                          className="w-full bg-white border border-[#0A0A0A]/15 rounded-xl py-3.5 px-4 text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/35 focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                        />
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
-                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">Contraseña</label>
+                          <label htmlFor="register-password" className="font-sans text-sm font-semibold text-[#0A0A0A]">
+                            Contraseña
+                          </label>
                           <input
                             id="register-password"
                             type="password"
-                            placeholder="Min 4 car."
+                            placeholder="Mín. 4 caracteres"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             required
-                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 px-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm tracking-widest"
+                            className="w-full bg-white border border-[#0A0A0A]/15 rounded-xl py-3.5 px-4 text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/35 focus:outline-none focus:border-[#0A0A0A] transition-colors"
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="font-sans text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#1C1C1C]/50">Confirmar</label>
+                          <label htmlFor="register-confirm-password" className="font-sans text-sm font-semibold text-[#0A0A0A]">
+                            Confirmar
+                          </label>
                           <input
                             id="register-confirm-password"
                             type="password"
-                            placeholder="Repite pass"
+                            placeholder="Repite tu contraseña"
                             value={confirmPasswordInput}
                             onChange={(e) => setConfirmPasswordInput(e.target.value)}
                             required
-                            className="w-full bg-white border border-[#1C1C1C]/12 rounded-2xl py-3.5 px-4 text-sm text-[#1C1C1C] placeholder:text-[#1C1C1C]/30 focus:outline-none focus:border-[#5A8C7C] transition-colors shadow-sm tracking-widest"
+                            className="w-full bg-white border border-[#0A0A0A]/15 rounded-xl py-3.5 px-4 text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/35 focus:outline-none focus:border-[#0A0A0A] transition-colors"
                           />
                         </div>
                       </div>
 
-                      <p className="text-[10px] font-sans text-[#5A8C7C] font-bold bg-[#5A8C7C]/10 border border-[#5A8C7C]/20 rounded-xl p-3 flex items-center justify-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        Sello de bienvenida: ¡tu primer visita registrada!
+                      <p className="font-sans text-xs text-[#0A0A0A]/70 font-medium bg-[#EFEFEF] rounded-xl p-3.5 flex items-center justify-center gap-2">
+                        <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
+                        Sello de bienvenida: ¡tu primera visita registrada!
                       </p>
 
                       <button
                         type="submit"
                         id="register-submit-btn"
-                        className="w-full bg-[#5A8C7C] hover:bg-[#4A7A6A] text-white py-4 rounded-2xl font-sans font-bold uppercase tracking-[0.22em] text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                        className="w-full bg-[#0A0A0A] hover:bg-[#2A2A2A] text-white py-4 rounded-xl font-sans font-bold uppercase tracking-[0.18em] text-xs transition-colors cursor-pointer"
                       >
                         Registrarme y Empezar
                       </button>
-                    </form>
-                  )}
 
-                  {/* Register / Login toggle */}
-                  {loginRole === 'client' && (
-                    <p className="text-center font-sans text-xs text-[#1C1C1C]/50">
-                      {isRegistering ? '¿Ya eres miembro? ' : '¿Aún no eres miembro? '}
-                      <button
-                        id="toggle-register-btn"
-                        onClick={() => { setIsRegistering(!isRegistering); setAuthError(null); }}
-                        className="font-bold text-[#1C1C1C] hover:underline cursor-pointer"
-                      >
-                        {isRegistering ? 'Inicia Sesión' : 'Regístrate aquí'}
-                      </button>
-                    </p>
+                      {/* Terms footer */}
+                      <p className="text-center font-sans text-xs text-[#0A0A0A]/45 pt-1 leading-relaxed">
+                        Al continuar aceptas nuestros{' '}
+                        <span className="underline underline-offset-2 cursor-pointer hover:text-[#0A0A0A] transition-colors">Términos</span>
+                        {' '}y{' '}
+                        <span className="underline underline-offset-2 cursor-pointer hover:text-[#0A0A0A] transition-colors">Política de Privacidad</span>.
+                      </p>
+                    </form>
                   )}
 
                 </div>
