@@ -518,7 +518,7 @@ export default function App() {
       return;
     }
 
-    const newCode = `BUTTERY-CLIENT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newCode = `BLANCO-CLIENT-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newUser: User = {
       id: `c_${Date.now()}`,
@@ -662,7 +662,7 @@ export default function App() {
     const voucherIndex = vouchers.findIndex(v => v.code === scannedCode);
     if (voucherIndex === -1) {
       // Maybe the scanned code was actually standard client QR code instead? Let's check:
-      if (scannedCode.startsWith("BUTTERY-CLIENT-")) {
+      if (scannedCode.startsWith("BLANCO-CLIENT-") || scannedCode.startsWith("BUTTERY-CLIENT-")) {
         showToast("¡Ese es un código de cliente, no un boleto de sellos! Únicamente el personal puede escanear tu tarjeta.", "error");
       } else {
         showToast("Código QR inválido o expirado. Inténtalo de nuevo.", "error");
@@ -751,7 +751,7 @@ export default function App() {
     const matchedClient = users.find(u => u.qrCode === scannedCode && u.role === 'client');
     if (!matchedClient) {
       // Check if it's a voucher instead
-      if (scannedCode.startsWith("BUTTERY-VOUCHER-")) {
+      if (scannedCode.startsWith("BLANCO-VOUCHER-") || scannedCode.startsWith("BUTTERY-VOUCHER-")) {
         showToast("Este es un boleto de sellos para clientes, por favor selecciona una tarjeta de socio para escanear.", "error");
       } else {
         showToast(`Código no reconocido en el sistema.`, "error");
@@ -768,7 +768,7 @@ export default function App() {
 
   // Generate a voucher with points
   const handleGeneratePointsVoucher = (points: number, description: string) => {
-    const newVCode = `BUTTERY-VOUCHER-${Math.floor(100000 + Math.random() * 900000)}`;
+    const newVCode = `BLANCO-VOUCHER-${Math.floor(100000 + Math.random() * 900000)}`;
     const newVoucher: QRVoucher = {
       code: newVCode,
       points: points,
