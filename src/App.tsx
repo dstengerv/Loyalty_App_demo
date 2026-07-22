@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Lock, 
-  Mail, 
-  User as UserIcon, 
-  Sparkles, 
- 
-  ChevronRight, 
+import {
+  Lock,
+  Mail,
+  User as UserIcon,
+  Sparkles,
+
+  ChevronRight,
   ArrowRight,
-  QrCode, 
+  QrCode,
   CheckCircle,
   Clock,
   AlertCircle,
@@ -115,19 +115,19 @@ export default function App() {
             .maybeSingle();
 
           if (!settingsError && dbSettings) {
-                    setStampSymbol(dbSettings.stamp_symbol || '🧘');
-                    setBrandBrown(dbSettings.brand_brown || '#1C1C1C');
-                    setBrandGold(dbSettings.brand_gold || '#5A8C7C');
-                    setBrandBg(dbSettings.brand_bg || '#FFFFFF');
+            setStampSymbol(dbSettings.stamp_symbol || '🧘');
+            setBrandBrown(dbSettings.brand_brown || '#1C1C1C');
+            setBrandGold(dbSettings.brand_gold || '#5A8C7C');
+            setBrandBg(dbSettings.brand_bg || '#FFFFFF');
             setSettingsPin(dbSettings.settings_pin || '1234');
             setLogoUrl(dbSettings.logo_url || '');
             setLogoHeight(dbSettings.logo_height !== undefined && dbSettings.logo_height !== null ? Number(dbSettings.logo_height) : 40);
             setCardBgUrl(dbSettings.card_bg_url || 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80');
 
-                    localStorage.setItem('buttery_stamp_symbol', dbSettings.stamp_symbol || '🧘');
-                    localStorage.setItem('buttery_brand_brown', dbSettings.brand_brown || '#1C1C1C');
-                    localStorage.setItem('buttery_brand_gold', dbSettings.brand_gold || '#5A8C7C');
-                    localStorage.setItem('buttery_brand_bg', dbSettings.brand_bg || '#FFFFFF');
+            localStorage.setItem('buttery_stamp_symbol', dbSettings.stamp_symbol || '🧘');
+            localStorage.setItem('buttery_brand_brown', dbSettings.brand_brown || '#1C1C1C');
+            localStorage.setItem('buttery_brand_gold', dbSettings.brand_gold || '#5A8C7C');
+            localStorage.setItem('buttery_brand_bg', dbSettings.brand_bg || '#FFFFFF');
             localStorage.setItem('buttery_settings_pin', dbSettings.settings_pin || '1234');
             localStorage.setItem('buttery_logo_url', dbSettings.logo_url || '');
             localStorage.setItem('buttery_logo_height', (dbSettings.logo_height !== undefined && dbSettings.logo_height !== null ? dbSettings.logo_height : 40).toString());
@@ -353,8 +353,8 @@ export default function App() {
       description: "Tarjeta de fidelidad digital para Blanco Yoga Ciudad de México",
       start_url: "/",
       display: "standalone",
-      background_color: brandBg || "#FFFFFF",
-      theme_color: brandGold || "#5A8C7C",
+      background_color: brandBg || "#FAFAF8",
+      theme_color: "#FAFAF8",
       orientation: "portrait",
       icons: [
         {
@@ -380,6 +380,21 @@ export default function App() {
     }
     appleTouchLink.setAttribute('href', logoUrl || "/buttery_logo.svg");
 
+    // Set the browser theme-color meta tag (colors the iOS Safari status bar /
+    // overscroll area). Keep it neutral off-white so pulling past the page edge
+    // never reveals the old green.
+    let themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (!themeColorMeta) {
+      themeColorMeta = document.createElement('meta');
+      themeColorMeta.setAttribute('name', 'theme-color');
+      document.head.appendChild(themeColorMeta);
+    }
+    themeColorMeta.setAttribute('content', '#FAFAF8');
+
+    // Ensure the root document background (revealed by overscroll bounce) is neutral.
+    document.documentElement.style.backgroundColor = '#FAFAF8';
+    document.body.style.backgroundColor = '#FAFAF8';
+
     return () => {
       URL.revokeObjectURL(manifestURL);
     };
@@ -390,7 +405,7 @@ export default function App() {
     const path = window.location.pathname;
     const hash = window.location.hash;
     const search = window.location.search;
-    
+
     if (hash.includes('staff') || search.includes('role=staff') || search.includes('staff')) {
       return '/staff';
     }
@@ -406,7 +421,7 @@ export default function App() {
       const path = window.location.pathname;
       const hash = window.location.hash;
       const search = window.location.search;
-      
+
       if (hash.includes('staff') || search.includes('role=staff') || search.includes('staff')) {
         setCurrentPath('/staff');
       } else if (hash.includes('customer') || search.includes('role=customer') || search.includes('customer')) {
@@ -464,10 +479,10 @@ export default function App() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
-    
+
     const userEmail = emailInput.trim().toLowerCase();
     const found = users.find(u => u.email === userEmail && u.role === loginRole);
-    
+
     if (!found) {
       setAuthError(`No se encontró ningún ${loginRole === 'client' ? 'socio' : 'miembro de staff'} con este correo de prueba.`);
       return;
@@ -533,7 +548,7 @@ export default function App() {
 
     // Update state
     setUsers(prev => [...prev, newUser]);
-    
+
     // Auto login
     setCurrentUser(newUser);
 
@@ -584,6 +599,80 @@ export default function App() {
     setIsRegistering(false);
   };
 
+  // Register a new staff member (called from the PIN-gated settings "Equipo" section).
+  // Supports both individual accounts and a shared account — the supervisor just
+  // provides a name, email, and password. Returns an error string on failure, or
+  // null on success, so the settings UI can show inline feedback.
+  const handleRegisterStaff = (name: string, email: string, password: string): string | null => {
+    const cleanName = name.trim();
+    const emailLower = email.trim().toLowerCase();
+
+    if (!cleanName) return 'Ingresa un nombre para el miembro del staff.';
+    if (!emailLower || !emailLower.includes('@')) return 'Ingresa un correo electrónico válido.';
+    if (password.length < 4) return 'La contraseña debe tener al menos 4 caracteres.';
+
+    // If the email already exists as staff, treat it as updating the shared password
+    // rather than erroring — this makes the "one shared email all use" flow natural.
+    const existing = users.find(u => u.email === emailLower);
+    if (existing) {
+      if (existing.role !== 'staff') {
+        return 'Ese correo ya está registrado como socio (cliente).';
+      }
+      // Update the shared/existing staff password
+      const updatedUsers = users.map(u =>
+        u.id === existing.id ? { ...u, name: cleanName, password } : u
+      );
+      setUsers(updatedUsers);
+
+      if (isSupabaseConfigured && supabase) {
+        supabase.from('profiles').update({ name: cleanName, password }).eq('id', existing.id)
+          .then(({ error }) => { if (error) console.error('Supabase Error update staff:', error); });
+      }
+      return null;
+    }
+
+    // Create a brand-new staff account
+    const newStaff: User = {
+      id: `s_${Date.now()}`,
+      name: cleanName,
+      email: emailLower,
+      role: 'staff',
+      points: 0,
+      qrCode: `BLANCO-STAFF-${Math.floor(1000 + Math.random() * 9000)}`,
+      createdAt: new Date().toISOString(),
+      password
+    };
+
+    setUsers(prev => [...prev, newStaff]);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('profiles').insert([{
+        id: newStaff.id,
+        name: newStaff.name,
+        email: newStaff.email,
+        role: newStaff.role,
+        points: newStaff.points,
+        qr_code: newStaff.qrCode,
+        created_at: newStaff.createdAt,
+        password: newStaff.password
+      }]).then(({ error }) => { if (error) console.error('Supabase Error insert staff:', error); });
+    }
+
+    return null;
+  };
+
+  // Remove a staff member (supervisor action from the "Equipo" section).
+  const handleRemoveStaff = (staffId: string) => {
+    // Never allow removing the currently logged-in supervisor.
+    if (currentUser && currentUser.id === staffId) return;
+    setUsers(prev => prev.filter(u => u.id !== staffId));
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('profiles').delete().eq('id', staffId)
+        .then(({ error }) => { if (error) console.error('Supabase Error delete staff:', error); });
+    }
+  };
+
   // Points Add (for Staff scans)
   const handleAddPointsFromStaff = (userQrCode: string, points: number, description: string) => {
     const targetUserIndex = users.findIndex(u => u.qrCode === userQrCode && u.role === 'client');
@@ -595,7 +684,7 @@ export default function App() {
     const targetUser = users[targetUserIndex];
 
     const updatedUsers = [...users];
-    
+
     // Calculate final next points clamped to maximum 10
     let nextPoints = Math.min(10, targetUser.points + points);
     let reachedTen = nextPoints === 10;
@@ -692,7 +781,7 @@ export default function App() {
       const updatedUsers = [...users];
       let nextPoints = Math.min(10, currentUser.points + voucher.points);
       let reachedTen = nextPoints === 10;
-      
+
       updatedUsers[userIndex] = {
         ...currentUser,
         points: nextPoints
@@ -742,7 +831,7 @@ export default function App() {
         showToast(`¡Cupón canjeado con éxito! Sumaste ${voucher.points} ${voucher.points === 1 ? 'sello' : 'sellos'}.`, "success");
       }
     }
-    
+
     setScannerOpen(false);
   };
 
@@ -795,7 +884,7 @@ export default function App() {
   // Redeem reward
   const handleRedeemReward = (reward: RewardItem) => {
     if (!currentUser) return;
-    
+
     const userIndex = users.findIndex(u => u.id === currentUser.id);
     if (userIndex !== -1 && currentUser.points >= reward.pointsCost) {
       const updatedUsers = [...users];
@@ -895,7 +984,7 @@ export default function App() {
           if (error) console.error('Supabase Error transaction:', error);
         });
       }
-      
+
       showToast(`¡Felicidades! Canjeado con éxito. Tu planilla ha regresado a 0 sellos.`, 'success');
     }
   };
@@ -943,7 +1032,7 @@ export default function App() {
           if (error) console.error('Supabase Error transaction:', error);
         });
       }
-      
+
       showToast(`¡Éxito! Se registró el canje de ${targetUser.name}. Su tarjeta regresó a 0 sellos.`, 'success');
     }
   };
@@ -983,22 +1072,20 @@ export default function App() {
   );
 
   return (
-      <div className={`font-sans selection:bg-neutral-200 selection:text-neutral-900 min-h-screen flex flex-col ${
-        currentUser?.role === 'client' ? 'bg-[#FAFAF8] items-center justify-start' : ''
+    <div className={`font-sans selection:bg-neutral-200 selection:text-neutral-900 min-h-screen flex flex-col ${currentUser?.role === 'client' ? 'bg-[#FAFAF8] items-center justify-start' : ''
       }`}>
-      
+
       {/* Toast Notification message */}
       {successToast && (
         <div
           id="success-toast"
           style={{ animation: 'slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
-          className={`fixed top-6 left-4 right-4 mx-auto max-w-sm z-50 px-5 py-3.5 rounded-2xl flex items-center gap-3 shadow-2xl border ${
-            successToast.type === 'error'
+          className={`fixed top-6 left-4 right-4 mx-auto max-w-sm z-50 px-5 py-3.5 rounded-2xl flex items-center gap-3 shadow-2xl border ${successToast.type === 'error'
               ? 'bg-rose-600 border-rose-500/30 text-white'
               : successToast.type === 'info'
                 ? 'bg-[#2D241E] border-white/10 text-white'
                 : 'bg-[#0A0A0A] border-white/10 text-white'
-          }`}
+            }`}
         >
           {successToast.type === 'error' ? (
             <AlertCircle className="w-4 h-4 text-white/80 flex-shrink-0" />
@@ -1015,11 +1102,10 @@ export default function App() {
       <div className="w-full">
 
         {/* The screen itself */}
-        <div 
+        <div
           id="pwa-screen"
-          className={`w-full bg-brand-bg overflow-hidden flex flex-col min-h-screen ${
-            currentUser?.role === 'client' ? 'md:max-w-sm md:mx-auto md:shadow-2xl' : ''
-          }`}
+          className={`w-full bg-brand-bg overflow-hidden flex flex-col min-h-screen ${currentUser?.role === 'client' ? 'md:max-w-sm md:mx-auto md:shadow-2xl' : ''
+            }`}
           style={{
             '--color-brand-brown': brandBrown,
             '--color-brand-gold': brandGold,
@@ -1061,6 +1147,8 @@ export default function App() {
                 logoHeight={logoHeight}
                 cardBgUrl={cardBgUrl}
                 onUpdateSettings={handleUpdateSettings}
+                onRegisterStaff={handleRegisterStaff}
+                onRemoveStaff={handleRemoveStaff}
               />
             )
           ) : (
@@ -1131,8 +1219,8 @@ export default function App() {
                     <p className="font-sans text-sm text-[#0A0A0A]/55 mt-2">
                       {loginRole === 'client'
                         ? (isRegistering
-                            ? 'Crea tu cuenta y estrena tu tarjeta con un sello de bienvenida.'
-                            : 'Inicia sesión para reservar tu próxima clase.')
+                          ? 'Crea tu cuenta y estrena tu tarjeta con un sello de bienvenida.'
+                          : 'Inicia sesión para reservar tu próxima clase.')
                         : 'Consola interna exclusiva para instructores y personal.'
                       }
                     </p>
@@ -1145,11 +1233,10 @@ export default function App() {
                         type="button"
                         id="tab-login"
                         onClick={() => switchAuthTab(false)}
-                        className={`flex-1 py-2.5 rounded-lg font-sans text-sm font-semibold transition-all cursor-pointer ${
-                          !isRegistering
+                        className={`flex-1 py-2.5 rounded-lg font-sans text-sm font-semibold transition-all cursor-pointer ${!isRegistering
                             ? 'bg-white text-[#0A0A0A] shadow-sm'
                             : 'bg-transparent text-[#0A0A0A]/50 hover:text-[#0A0A0A]/70'
-                        }`}
+                          }`}
                       >
                         Iniciar sesión
                       </button>
@@ -1157,11 +1244,10 @@ export default function App() {
                         type="button"
                         id="tab-register"
                         onClick={() => switchAuthTab(true)}
-                        className={`flex-1 py-2.5 rounded-lg font-sans text-sm font-semibold transition-all cursor-pointer ${
-                          isRegistering
+                        className={`flex-1 py-2.5 rounded-lg font-sans text-sm font-semibold transition-all cursor-pointer ${isRegistering
                             ? 'bg-white text-[#0A0A0A] shadow-sm'
                             : 'bg-transparent text-[#0A0A0A]/50 hover:text-[#0A0A0A]/70'
-                        }`}
+                          }`}
                       >
                         Registrarse
                       </button>
@@ -1364,7 +1450,7 @@ export default function App() {
             <QRCameraScanner
               title={currentUser.role === 'client' ? 'Escanear Ticket o Cupón' : 'Escanear Tarjeta de Socio'}
               subtitle={
-                currentUser.role === 'client' 
+                currentUser.role === 'client'
                   ? 'Alinea la cámara de tu celular con el código QR impreso en tu ticket o bono.'
                   : 'Sostén la cámara frente a la tarjeta móvil del cliente para registrar su visita.'
               }
@@ -1372,8 +1458,8 @@ export default function App() {
               simulatedVouchers={activeVouchers}
               simulatedClientQRs={simulatedClientQRs}
               onScanSuccess={
-                currentUser.role === 'client' 
-                  ? handleVoucherScannedByClient 
+                currentUser.role === 'client'
+                  ? handleVoucherScannedByClient
                   : handleClientQrScannedByStaff
               }
               onClose={() => setScannerOpen(false)}
