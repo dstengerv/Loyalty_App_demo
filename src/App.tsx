@@ -518,7 +518,7 @@ export default function App() {
       return;
     }
 
-    const newCode = `BUTTERY-CLIENT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newCode = `BLANCO-CLIENT-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newUser: User = {
       id: `c_${Date.now()}`,
@@ -662,7 +662,7 @@ export default function App() {
     const voucherIndex = vouchers.findIndex(v => v.code === scannedCode);
     if (voucherIndex === -1) {
       // Maybe the scanned code was actually standard client QR code instead? Let's check:
-      if (scannedCode.startsWith("BUTTERY-CLIENT-")) {
+      if (scannedCode.startsWith("BLANCO-CLIENT-") || scannedCode.startsWith("BUTTERY-CLIENT-")) {
         showToast("¡Ese es un código de cliente, no un boleto de sellos! Únicamente el personal puede escanear tu tarjeta.", "error");
       } else {
         showToast("Código QR inválido o expirado. Inténtalo de nuevo.", "error");
@@ -751,7 +751,7 @@ export default function App() {
     const matchedClient = users.find(u => u.qrCode === scannedCode && u.role === 'client');
     if (!matchedClient) {
       // Check if it's a voucher instead
-      if (scannedCode.startsWith("BUTTERY-VOUCHER-")) {
+      if (scannedCode.startsWith("BLANCO-VOUCHER-") || scannedCode.startsWith("BUTTERY-VOUCHER-")) {
         showToast("Este es un boleto de sellos para clientes, por favor selecciona una tarjeta de socio para escanear.", "error");
       } else {
         showToast(`Código no reconocido en el sistema.`, "error");
@@ -768,7 +768,7 @@ export default function App() {
 
   // Generate a voucher with points
   const handleGeneratePointsVoucher = (points: number, description: string) => {
-    const newVCode = `BUTTERY-VOUCHER-${Math.floor(100000 + Math.random() * 900000)}`;
+    const newVCode = `BLANCO-VOUCHER-${Math.floor(100000 + Math.random() * 900000)}`;
     const newVoucher: QRVoucher = {
       code: newVCode,
       points: points,
@@ -968,12 +968,15 @@ export default function App() {
 
   // Shared brand logo — official Blanco Yoga wordmark
   // Place the file at src/assets/blanco_yoga_logo.png
+  // The PNG has a white (non-transparent) background, so on the dark hero panel
+  // we use mix-blend-mode 'screen' — white background disappears, black letters
+  // show through as white. On the light form panel we render it as-is.
   const BrandLogo = ({ inverted = false }: { inverted?: boolean }) => (
     <img
       src={blancoYogaLogo}
       alt="Blanco Yoga"
       className="h-12 md:h-14 w-auto object-contain select-none"
-      style={inverted ? { filter: 'brightness(0) invert(1)' } : undefined}
+      style={inverted ? { mixBlendMode: 'screen', filter: 'invert(1)' } : undefined}
       referrerPolicy="no-referrer"
       draggable={false}
     />
@@ -981,7 +984,7 @@ export default function App() {
 
   return (
       <div className={`font-sans selection:bg-neutral-200 selection:text-neutral-900 min-h-screen flex flex-col ${
-        currentUser?.role === 'client' ? 'bg-[#5A8C7C] items-center justify-start' : ''
+        currentUser?.role === 'client' ? 'bg-[#FAFAF8] items-center justify-start' : ''
       }`}>
       
       {/* Toast Notification message */}
