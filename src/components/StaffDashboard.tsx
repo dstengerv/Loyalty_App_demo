@@ -14,6 +14,9 @@ import {
   AlertCircle,
   Plus,
   History,
+  ChevronLeft,
+  Upload,
+  RotateCcw,
 } from 'lucide-react';
 import { User as UserType, Transaction, RewardItem, QRVoucher } from '../types';
 
@@ -851,21 +854,54 @@ export default function StaffDashboard({
         </div>
       )}
 
-      {/* ── STAFF CONFIGURATION MODAL ── */}
+      {/* ══════════════════════════════════════════
+          STAFF CONFIGURATION — full-page brand settings
+          ══════════════════════════════════════════ */}
       {isSettingsOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn p-4 overflow-y-auto">
-          <div className="w-full max-w-sm bg-white rounded-[2rem] p-6 shadow-2xl space-y-6 animate-scaleUp my-8 max-h-[90vh] overflow-y-auto text-left">
-            <div className="border-b border-[#0A0A0A]/8 pb-3">
-              <h3 className="font-sans text-lg font-semibold tracking-tight text-[#0A0A0A]">Configuración de Marca</h3>
-              <p className="font-sans text-[9px] text-[#0A0A0A]/45 mt-0.5 uppercase tracking-[0.2em] font-bold">Personalizable por el staff</p>
+        <div className="fixed inset-0 z-50 bg-[#FAFAF8] overflow-y-auto animate-fadeIn">
+          <div className="max-w-2xl mx-auto px-6 md:px-10 pb-40">
+
+            {/* Top bar */}
+            <div className="flex items-center justify-between pt-7">
+              <button
+                id="settings-btn-back"
+                onClick={() => setIsSettingsOpen(false)}
+                className="flex items-center gap-1.5 font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#0A0A0A] hover:text-[#0A0A0A]/55 cursor-pointer transition-colors"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" /> Staff
+              </button>
+              <span className="font-sans text-[10px] font-bold uppercase tracking-[0.25em] text-[#0A0A0A]/45">Admin</span>
             </div>
 
-            {/* 1. Stamp symbol */}
-            <div className="space-y-2.5">
-              <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-[#0A0A0A]/45">
-                1. Símbolo del sello (planilla)
-              </span>
-              <div className="grid grid-cols-4 gap-2">
+            {/* Heading */}
+            <div className="pt-8">
+              <p className="font-sans text-[9px] uppercase tracking-[0.3em] text-[#0A0A0A]/45 font-bold">
+                Blanco Yoga &middot; Condesa
+              </p>
+              <h1 className="font-sans font-semibold text-4xl md:text-5xl tracking-tight leading-[1.1] mt-3">
+                <span className="text-[#0A0A0A]">Configuración</span><br />
+                <span className="text-[#0A0A0A]/30">de marca</span>
+              </h1>
+              <p className="font-sans text-sm text-[#0A0A0A]/55 mt-4 leading-relaxed max-w-md">
+                Personaliza el sello, la paleta y los recursos visuales del programa de lealtad.
+              </p>
+            </div>
+
+            <div className="h-px bg-[#0A0A0A]/8 mt-8" />
+
+            {/* ── 01 · Stamp symbol ── */}
+            <section className="pt-10">
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="font-sans text-xl font-semibold tracking-tight text-[#0A0A0A] flex items-baseline gap-3">
+                  <span className="font-mono text-[11px] font-bold text-[#0A0A0A]/35 tracking-normal">01</span>
+                  Símbolo del sello
+                </h2>
+                <p className="font-sans text-[9px] uppercase tracking-[0.18em] text-[#0A0A0A]/40 font-bold text-right leading-relaxed max-w-[140px] pt-1.5">
+                  Se muestra en la tarjeta del socio
+                </p>
+              </div>
+
+              <div className="grid grid-cols-4 gap-3 mt-6">
                 {STAMP_PRESETS.map((p) => {
                   const isSelected = tempStamp === p.char;
                   return (
@@ -873,36 +909,40 @@ export default function StaffDashboard({
                       key={p.char}
                       id={`preset-stamp-${p.name.toLowerCase()}`}
                       onClick={() => setTempStamp(p.char)}
-                      className={`h-11 rounded-xl flex items-center justify-center border transition-all cursor-pointer text-lg ${
+                      className={`aspect-square rounded-full flex items-center justify-center border transition-all cursor-pointer text-2xl ${
                         isSelected
-                          ? 'bg-[#0A0A0A]/5 border-[#0A0A0A] scale-105'
-                          : 'bg-[#FAFAF8] border-[#0A0A0A]/10 hover:border-[#0A0A0A]/30'
+                          ? 'bg-[#0A0A0A] border-[#0A0A0A] scale-105'
+                          : 'bg-white border-[#0A0A0A]/12 hover:border-[#0A0A0A]/35'
                       }`}
                       title={p.name}
                     >
-                      <span>{p.char}</span>
+                      {isSelected ? (
+                        <Check className="w-6 h-6 text-white" strokeWidth={2.5} />
+                      ) : (
+                        <span>{p.char}</span>
+                      )}
                     </button>
                   );
                 })}
               </div>
 
               {/* Custom Image Stamp Uploader */}
-              <div className="pt-2.5 border-t border-[#0A0A0A]/8 space-y-2">
+              <div className="mt-8">
                 <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-[#0A0A0A]/45">
-                  O sube una imagen de sello personalizada:
+                  O sube una imagen personalizada
                 </span>
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-[#FAFAF8] border border-[#0A0A0A]/10 flex items-center justify-center relative overflow-hidden shrink-0">
+                <div className="flex items-center gap-4 mt-4">
+                  <div className="w-16 h-16 rounded-full bg-white border border-[#0A0A0A]/12 flex items-center justify-center relative overflow-hidden shrink-0">
                     {tempStamp && (tempStamp.startsWith('data:image/') || tempStamp.startsWith('http')) ? (
-                      <img src={tempStamp} alt="Sello cargado" className="w-9 h-9 object-contain" referrerPolicy="no-referrer" />
+                      <img src={tempStamp} alt="Sello cargado" className="w-12 h-12 object-contain" referrerPolicy="no-referrer" />
                     ) : (
-                      <span className="text-xl text-[#0A0A0A]/20">🖼️</span>
+                      <Upload className="w-5 h-5 text-[#0A0A0A]/30" />
                     )}
                   </div>
                   <div className="flex-1">
                     <label
                       htmlFor="custom-stamp-upload-input"
-                      className="px-3 py-1.5 bg-[#EFEFED] hover:bg-[#E5E5E3] text-[#0A0A0A] rounded-lg font-sans text-[9px] font-bold uppercase tracking-wider cursor-pointer inline-block"
+                      className="px-5 py-2.5 bg-white border border-[#0A0A0A]/15 hover:border-[#0A0A0A]/40 text-[#0A0A0A] rounded-full font-sans text-[10px] font-bold uppercase tracking-[0.15em] cursor-pointer inline-block transition-colors"
                     >
                       Seleccionar archivo
                     </label>
@@ -950,20 +990,28 @@ export default function StaffDashboard({
                         }
                       }}
                     />
-                    <p className="font-sans text-[9px] text-[#0A0A0A]/40 mt-1">Recomendado: PNG fondo transparente</p>
+                    <p className="font-sans text-[11px] text-[#0A0A0A]/45 mt-2">PNG, fondo transparente recomendado</p>
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* 2. Theme palette */}
-            <div className="space-y-2.5">
-              <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-[#0A0A0A]/45">
-                2. Paleta de color del club
-              </span>
-              <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">
+            {/* ── 02 · Theme palette ── */}
+            <section className="pt-12">
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="font-sans text-xl font-semibold tracking-tight text-[#0A0A0A] flex items-baseline gap-3">
+                  <span className="font-mono text-[11px] font-bold text-[#0A0A0A]/35 tracking-normal">02</span>
+                  Paleta del club
+                </h2>
+                <p className="font-sans text-[9px] uppercase tracking-[0.18em] text-[#0A0A0A]/40 font-bold text-right leading-relaxed max-w-[140px] pt-1.5">
+                  Aplica a botones, sellos y acentos
+                </p>
+              </div>
+
+              <div className="space-y-2.5 mt-6">
                 {THEME_PRESETS.map((p) => {
                   const isSelected = tempBrown === p.brown && tempGold === p.gold && tempBg === p.bg;
+                  const [title, subtitle] = p.name.split(' (');
                   return (
                     <button
                       key={p.name}
@@ -973,17 +1021,25 @@ export default function StaffDashboard({
                         setTempGold(p.gold);
                         setTempBg(p.bg);
                       }}
-                      className={`w-full p-3 rounded-xl border flex items-center justify-between transition-all cursor-pointer ${
+                      className={`w-full p-4 rounded-2xl border flex items-center justify-between transition-all cursor-pointer text-left ${
                         isSelected
-                          ? 'bg-[#0A0A0A]/5 border-[#0A0A0A]'
-                          : 'bg-[#FAFAF8] border-[#0A0A0A]/10 hover:border-[#0A0A0A]/30'
+                          ? 'bg-white border-[#0A0A0A] shadow-sm'
+                          : 'bg-white border-[#0A0A0A]/10 hover:border-[#0A0A0A]/30'
                       }`}
                     >
-                      <span className="font-sans text-xs font-medium text-[#0A0A0A]">{p.name}</span>
-                      <div className="flex gap-1.5 shrink-0">
-                        <div className="w-5 h-5 rounded-full border border-black/10" style={{ backgroundColor: p.brown }} title="Color de marca" />
-                        <div className="w-5 h-5 rounded-full border border-black/10" style={{ backgroundColor: p.gold }} title="Color acento" />
-                        <div className="w-5 h-5 rounded-full border border-black/10" style={{ backgroundColor: p.bg }} title="Color fondo" />
+                      <div>
+                        <span className="font-sans text-sm font-semibold text-[#0A0A0A] block">{title}</span>
+                        {subtitle && (
+                          <span className="font-sans text-xs text-[#0A0A0A]/50 block mt-0.5">{subtitle.replace(')', '')}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2.5 shrink-0">
+                        <div className="flex gap-1.5">
+                          <div className="w-5 h-5 rounded-full border border-black/10" style={{ backgroundColor: p.brown }} title="Color de marca" />
+                          <div className="w-5 h-5 rounded-full border border-black/10" style={{ backgroundColor: p.gold }} title="Color acento" />
+                          <div className="w-5 h-5 rounded-full border border-black/10" style={{ backgroundColor: p.bg }} title="Color fondo" />
+                        </div>
+                        {isSelected && <Check className="w-4 h-4 text-[#0A0A0A] ml-1" strokeWidth={2.5} />}
                       </div>
                     </button>
                   );
@@ -991,20 +1047,20 @@ export default function StaffDashboard({
               </div>
 
               {/* Custom hex */}
-              <div className="pt-2.5 border-t border-[#0A0A0A]/8 space-y-2">
+              <div className="mt-8">
                 <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-[#0A0A0A]/45">
-                  O ingresa tus propios códigos de color (HEX):
+                  O ingresa tus propios códigos (HEX)
                 </span>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-3 mt-4">
                   {([
                     { label: 'Marca', value: tempBrown, set: setTempBrown, fallback: '#0A0A0A' },
                     { label: 'Acento', value: tempGold, set: setTempGold, fallback: '#5A8C7C' },
                     { label: 'Fondo', value: tempBg, set: setTempBg, fallback: '#FAFAF8' },
                   ] as const).map((c) => (
-                    <div key={c.label} className="space-y-1">
-                      <label className="block text-[9px] font-sans font-semibold text-[#0A0A0A]/50">{c.label}</label>
-                      <div className="flex items-center gap-1.5">
-                        <div className="relative w-6 h-6 rounded-md border border-[#0A0A0A]/15 cursor-pointer shrink-0" style={{ backgroundColor: c.value }}>
+                    <div key={c.label} className="space-y-2">
+                      <label className="block text-[9px] font-sans font-bold uppercase tracking-[0.15em] text-[#0A0A0A]/45">{c.label}</label>
+                      <div className="flex items-center gap-2 bg-white border border-[#0A0A0A]/12 rounded-xl px-2.5 py-2">
+                        <div className="relative w-5 h-5 rounded-full border border-[#0A0A0A]/15 cursor-pointer shrink-0" style={{ backgroundColor: c.value }}>
                           <input
                             type="color"
                             value={c.value.startsWith('#') && c.value.length === 7 ? c.value : c.fallback}
@@ -1017,33 +1073,40 @@ export default function StaffDashboard({
                           maxLength={7}
                           value={c.value}
                           onChange={(e) => c.set(e.target.value)}
-                          className="w-full bg-[#FAFAF8] rounded-lg px-1.5 py-1 text-[9px] font-mono text-[#0A0A0A] border border-[#0A0A0A]/10 uppercase focus:border-[#0A0A0A] focus:outline-none"
+                          className="w-full bg-transparent text-[11px] font-mono text-[#0A0A0A] uppercase focus:outline-none min-w-0"
                         />
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* 3. Brand logo */}
-            <div className="space-y-2.5">
-              <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-[#0A0A0A]/45">
-                3. Logo de la marca (pantalla de acceso)
-              </span>
-              <div className="bg-[#FAFAF8] border border-[#0A0A0A]/10 rounded-xl p-3 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 rounded-xl bg-white border border-[#0A0A0A]/10 flex items-center justify-center relative overflow-hidden shrink-0">
+            {/* ── 03 · Brand logo ── */}
+            <section className="pt-12">
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="font-sans text-xl font-semibold tracking-tight text-[#0A0A0A] flex items-baseline gap-3">
+                  <span className="font-mono text-[11px] font-bold text-[#0A0A0A]/35 tracking-normal">03</span>
+                  Logo de la marca
+                </h2>
+                <p className="font-sans text-[9px] uppercase tracking-[0.18em] text-[#0A0A0A]/40 font-bold text-right leading-relaxed max-w-[150px] pt-1.5">
+                  Pantalla de acceso y encabezados
+                </p>
+              </div>
+
+              <div className="bg-white border border-[#0A0A0A]/10 rounded-2xl p-5 space-y-4 mt-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 rounded-2xl bg-[#FAFAF8] border border-[#0A0A0A]/10 flex items-center justify-center relative overflow-hidden shrink-0">
                     {tempLogoUrl ? (
-                      <img src={tempLogoUrl} alt="Logo temporal" className="max-w-[56px] max-h-[56px] object-contain" referrerPolicy="no-referrer" />
+                      <img src={tempLogoUrl} alt="Logo temporal" className="max-w-[64px] max-h-[64px] object-contain" referrerPolicy="no-referrer" />
                     ) : (
-                      <span className="text-2xl text-[#0A0A0A]/20">🏢</span>
+                      <span className="font-serif italic text-sm text-[#0A0A0A]/40">blanco</span>
                     )}
                   </div>
-                  <div className="flex-1 space-y-1.5">
+                  <div className="flex-1 space-y-2">
                     <label
                       htmlFor="custom-logo-upload-input"
-                      className="px-3 py-1.5 bg-[#EFEFED] hover:bg-[#E5E5E3] text-[#0A0A0A] rounded-lg font-sans text-[9px] font-bold uppercase tracking-wider cursor-pointer inline-block"
+                      className="px-5 py-2.5 bg-white border border-[#0A0A0A]/15 hover:border-[#0A0A0A]/40 text-[#0A0A0A] rounded-full font-sans text-[10px] font-bold uppercase tracking-[0.15em] cursor-pointer inline-block transition-colors"
                     >
                       Sube tu logo (PNG, JPG)
                     </label>
@@ -1094,19 +1157,19 @@ export default function StaffDashboard({
                     {tempLogoUrl && (
                       <button
                         onClick={() => setTempLogoUrl('')}
-                        className="block text-[9px] font-semibold text-red-600 hover:underline uppercase tracking-wider cursor-pointer"
+                        className="flex items-center gap-1.5 text-[10px] font-bold text-[#5A8C7C] hover:underline uppercase tracking-[0.15em] cursor-pointer"
                       >
-                        Restablecer a logo original
+                        <RotateCcw className="w-3 h-3" /> Restablecer original
                       </button>
                     )}
                   </div>
                 </div>
 
                 {tempLogoUrl && (
-                  <div className="space-y-1.5 pt-2 border-t border-[#0A0A0A]/8">
-                    <div className="flex justify-between items-center text-[9px] font-sans font-bold uppercase tracking-wider text-[#0A0A0A]/50">
-                      <span>Altura del logo: {tempLogoHeight}px</span>
-                      <span className="font-mono text-[#0A0A0A]/35">30px - 150px</span>
+                  <div className="space-y-2 pt-4 border-t border-[#0A0A0A]/8">
+                    <div className="flex justify-between items-center text-[9px] font-sans font-bold uppercase tracking-[0.15em] text-[#0A0A0A]/50">
+                      <span>Altura del logo</span>
+                      <span className="font-mono text-[#0A0A0A] text-xs">{tempLogoHeight}px</span>
                     </div>
                     <input
                       type="range"
@@ -1116,31 +1179,42 @@ export default function StaffDashboard({
                       onChange={(e) => setTempLogoHeight(Number(e.target.value))}
                       className="w-full accent-[#0A0A0A] cursor-pointer"
                     />
+                    <div className="flex justify-between font-mono text-[9px] text-[#0A0A0A]/35">
+                      <span>30px</span>
+                      <span>150px</span>
+                    </div>
                   </div>
                 )}
               </div>
-            </div>
+            </section>
 
-            {/* 4. Card background image */}
-            <div className="space-y-2.5">
-              <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-[#0A0A0A]/45">
-                4. Imagen de la tarjeta de lealtad
-              </span>
-              <div className="bg-[#FAFAF8] border border-[#0A0A0A]/10 rounded-xl p-3 space-y-3">
-                <div className="w-full h-24 rounded-xl overflow-hidden border border-[#0A0A0A]/10 bg-[#EFEFED] relative">
+            {/* ── 04 · Card image ── */}
+            <section className="pt-12">
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="font-sans text-xl font-semibold tracking-tight text-[#0A0A0A] flex items-baseline gap-3">
+                  <span className="font-mono text-[11px] font-bold text-[#0A0A0A]/35 tracking-normal">04</span>
+                  Imagen de la tarjeta
+                </h2>
+                <p className="font-sans text-[9px] uppercase tracking-[0.18em] text-[#0A0A0A]/40 font-bold text-right leading-relaxed max-w-[150px] pt-1.5">
+                  Se muestra en la tarjeta digital del socio
+                </p>
+              </div>
+
+              <div className="mt-6 space-y-4">
+                <div className="w-full rounded-2xl overflow-hidden border border-[#0A0A0A]/10 bg-[#EFEFED] relative" style={{ aspectRatio: '16/10' }}>
                   <img
                     src={tempCardBgUrl || '/studio.jpg'}
                     alt="Vista previa de tarjeta"
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
-                  <span className="absolute bottom-2 left-2 font-sans text-[8px] text-white font-bold uppercase tracking-wider bg-black/40 px-2 py-0.5 rounded-full">
+                  <span className="absolute top-3 left-3 font-sans text-[9px] text-white font-bold uppercase tracking-[0.15em] bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
                     Vista previa
                   </span>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block font-sans text-[9px] font-semibold text-[#0A0A0A]/50 uppercase tracking-wider">
+                <div className="space-y-2">
+                  <label className="block font-sans text-[9px] font-bold text-[#0A0A0A]/45 uppercase tracking-[0.15em]">
                     URL de imagen (https://...)
                   </label>
                   <input
@@ -1149,37 +1223,48 @@ export default function StaffDashboard({
                     value={tempCardBgUrl}
                     onChange={(e) => setTempCardBgUrl(e.target.value)}
                     placeholder="https://ejemplo.com/imagen.jpg"
-                    className="w-full bg-white rounded-xl px-3 py-2 text-[10px] text-[#0A0A0A] outline-none border border-[#0A0A0A]/10 focus:border-[#0A0A0A] placeholder:text-[#0A0A0A]/30 font-mono"
+                    className="w-full bg-white rounded-xl px-4 py-3 text-sm text-[#0A0A0A] outline-none border border-[#0A0A0A]/12 focus:border-[#0A0A0A] placeholder:text-[#0A0A0A]/30"
                   />
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* 5. PIN */}
-            <div className="space-y-2.5">
-              <label htmlFor="settings-pin-input" className="block font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-[#0A0A0A]/45">
-                5. Código PIN de configuración (4 dígitos)
-              </label>
+            {/* ── 05 · PIN ── */}
+            <section className="pt-12">
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="font-sans text-xl font-semibold tracking-tight text-[#0A0A0A] flex items-baseline gap-3">
+                  <span className="font-mono text-[11px] font-bold text-[#0A0A0A]/35 tracking-normal">05</span>
+                  PIN de configuración
+                </h2>
+                <p className="font-sans text-[9px] uppercase tracking-[0.18em] text-[#0A0A0A]/40 font-bold text-right leading-relaxed max-w-[140px] pt-1.5">
+                  Protege el acceso a esta pantalla
+                </p>
+              </div>
+
               <input
                 id="settings-pin-input"
                 type="text"
+                inputMode="numeric"
                 maxLength={4}
                 value={tempPin}
                 onChange={(e) => {
                   const val = e.target.value.replace(/\D/g, '');
                   if (val.length <= 4) setTempPin(val);
                 }}
-                className="w-full bg-[#FAFAF8] rounded-xl px-4 py-2.5 text-xs text-[#0A0A0A] outline-none border border-[#0A0A0A]/10 focus:border-[#0A0A0A]"
-                placeholder="Introduce 4 dígitos numéricos"
+                className="w-full max-w-[200px] mt-6 bg-white rounded-xl px-5 py-3.5 text-lg font-mono tracking-[0.4em] text-[#0A0A0A] outline-none border border-[#0A0A0A]/12 focus:border-[#0A0A0A] text-center"
+                placeholder="0000"
               />
-            </div>
+              <p className="font-sans text-[11px] text-[#0A0A0A]/40 mt-2">4 dígitos numéricos</p>
+            </section>
+          </div>
 
-            {/* Modal actions */}
-            <div className="flex items-center gap-3 pt-3 border-t border-[#0A0A0A]/8">
+          {/* Sticky footer actions */}
+          <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#FAFAF8] via-[#FAFAF8] to-transparent pt-10 pb-6 z-10">
+            <div className="max-w-2xl mx-auto px-6 md:px-10 flex items-center gap-3">
               <button
                 id="settings-btn-cancel"
                 onClick={() => setIsSettingsOpen(false)}
-                className="flex-1 py-3 bg-[#EFEFED] hover:bg-[#E5E5E3] text-[#0A0A0A]/60 rounded-xl font-sans text-[10px] font-bold uppercase tracking-[0.15em] transition-colors cursor-pointer text-center"
+                className="flex-1 py-4 bg-white border border-[#0A0A0A]/15 hover:border-[#0A0A0A]/40 text-[#0A0A0A]/70 rounded-full font-sans text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer text-center"
               >
                 Descartar
               </button>
@@ -1192,16 +1277,15 @@ export default function StaffDashboard({
                   setFeedbackMsg({ text: '¡Configuración de marca actualizada de manera segura!', isError: false });
                   setTimeout(() => setFeedbackMsg(null), 2500);
                 }}
-                className={`flex-1 py-3 rounded-xl font-sans text-[10px] font-bold uppercase tracking-[0.15em] transition-colors cursor-pointer text-center ${
+                className={`flex-[1.4] py-4 rounded-full font-sans text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer text-center ${
                   tempPin.length !== 4
                     ? 'bg-[#EFEFED] text-[#0A0A0A]/30 cursor-not-allowed'
                     : 'bg-[#0A0A0A] hover:bg-[#2A2A2A] text-white'
                 }`}
               >
-                Guardar
+                Guardar cambios
               </button>
             </div>
-
           </div>
         </div>
       )}
