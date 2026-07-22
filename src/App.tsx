@@ -981,7 +981,7 @@ export default function App() {
 
   return (
       <div className={`font-sans selection:bg-neutral-200 selection:text-neutral-900 min-h-screen flex flex-col ${
-        currentUser?.role === 'client' ? 'bg-[#5A8C7C] items-center justify-start' : ''
+        currentUser?.role === 'client' ? 'bg-[#FAFAF8] items-center justify-start' : ''
       }`}>
       
       {/* Toast Notification message */}
