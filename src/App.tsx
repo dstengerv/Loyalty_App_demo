@@ -968,12 +968,15 @@ export default function App() {
 
   // Shared brand logo — official Blanco Yoga wordmark
   // Place the file at src/assets/blanco_yoga_logo.png
+  // The PNG has a white (non-transparent) background, so on the dark hero panel
+  // we use mix-blend-mode 'screen' — white background disappears, black letters
+  // show through as white. On the light form panel we render it as-is.
   const BrandLogo = ({ inverted = false }: { inverted?: boolean }) => (
     <img
       src={blancoYogaLogo}
       alt="Blanco Yoga"
       className="h-12 md:h-14 w-auto object-contain select-none"
-      style={inverted ? { filter: 'brightness(0) invert(1)' } : undefined}
+      style={inverted ? { mixBlendMode: 'screen', filter: 'invert(1)' } : undefined}
       referrerPolicy="no-referrer"
       draggable={false}
     />
