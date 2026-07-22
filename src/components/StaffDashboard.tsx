@@ -17,6 +17,10 @@ import {
   ChevronLeft,
   Upload,
   RotateCcw,
+  UserPlus,
+  Trash2,
+  Mail,
+  Shield,
 } from 'lucide-react';
 import { User as UserType, Transaction, RewardItem, QRVoucher } from '../types';
 
@@ -39,6 +43,8 @@ interface StaffDashboardProps {
   logoHeight: number;
   cardBgUrl: string;
   onUpdateSettings: (stamp: string, brown: string, gold: string, bg: string, newPin: string, logoUrl: string, logoHeight: number, cardBgUrl: string) => void;
+  onRegisterStaff?: (name: string, email: string, password: string) => string | null;
+  onRemoveStaff?: (staffId: string) => void;
 }
 
 // "HACE X DÍAS" helper for last visit labels
@@ -71,6 +77,8 @@ export default function StaffDashboard({
   logoHeight,
   cardBgUrl,
   onUpdateSettings,
+  onRegisterStaff,
+  onRemoveStaff,
 }: StaffDashboardProps) {
   // Tabs: 'control' (check-in / scan) and 'users' (CRM list)
   const [activeTab, setActiveTab] = useState<'control' | 'users'>('control');
@@ -88,6 +96,29 @@ export default function StaffDashboard({
   const [tempLogoUrl, setTempLogoUrl] = useState<string>(logoUrl);
   const [tempLogoHeight, setTempLogoHeight] = useState<number>(logoHeight);
   const [tempCardBgUrl, setTempCardBgUrl] = useState<string>(cardBgUrl);
+
+  // Staff registration form state (Equipo section)
+  const [newStaffName, setNewStaffName] = useState<string>('');
+  const [newStaffEmail, setNewStaffEmail] = useState<string>('');
+  const [newStaffPassword, setNewStaffPassword] = useState<string>('');
+  const [staffFormError, setStaffFormError] = useState<string | null>(null);
+  const [staffFormSuccess, setStaffFormSuccess] = useState<string | null>(null);
+
+  const handleStaffRegisterSubmit = () => {
+    setStaffFormError(null);
+    setStaffFormSuccess(null);
+    if (!onRegisterStaff) return;
+    const err = onRegisterStaff(newStaffName, newStaffEmail, newStaffPassword);
+    if (err) {
+      setStaffFormError(err);
+      return;
+    }
+    setStaffFormSuccess(`Acceso guardado para ${newStaffEmail.trim().toLowerCase()}.`);
+    setNewStaffName('');
+    setNewStaffEmail('');
+    setNewStaffPassword('');
+    setTimeout(() => setStaffFormSuccess(null), 3500);
+  };
 
   const THEME_PRESETS = [
     { name: 'Blanco Yoga (Negro & Salvia)', brown: '#0A0A0A', gold: '#5A8C7C', bg: '#FAFAF8' },
@@ -1255,6 +1286,144 @@ export default function StaffDashboard({
                 placeholder="0000"
               />
               <p className="font-sans text-[11px] text-[#0A0A0A]/40 mt-2">4 dígitos numéricos</p>
+            </section>
+
+            {/* ── 06 · Equipo (staff accounts) ── */}
+            <section className="pt-12">
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="font-sans text-xl font-semibold tracking-tight text-[#0A0A0A] flex items-baseline gap-3">
+                  <span className="font-mono text-[11px] font-bold text-[#0A0A0A]/35 tracking-normal">06</span>
+                  Equipo
+                </h2>
+                <p className="font-sans text-[9px] uppercase tracking-[0.18em] text-[#0A0A0A]/40 font-bold text-right leading-relaxed max-w-[150px] pt-1.5">
+                  Cuentas con acceso a la consola staff
+                </p>
+              </div>
+
+              {/* Register new staff form */}
+              <div className="bg-white border border-[#0A0A0A]/10 rounded-2xl p-5 space-y-4 mt-6">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-[#0A0A0A] flex items-center justify-center shrink-0">
+                    <UserPlus className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-sans text-sm font-semibold text-[#0A0A0A] leading-none">Registrar acceso de staff</p>
+                    <p className="font-sans text-[11px] text-[#0A0A0A]/45 mt-1 leading-none">Crea una cuenta individual o una compartida para todo el equipo.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-1">
+                  <div className="space-y-1.5">
+                    <label htmlFor="new-staff-name" className="font-sans text-[9px] font-bold uppercase tracking-[0.15em] text-[#0A0A0A]/45">Nombre o etiqueta</label>
+                    <input
+                      id="new-staff-name"
+                      type="text"
+                      placeholder="Ej. Carlos · Recepción, o 'Equipo Condesa'"
+                      value={newStaffName}
+                      onChange={(e) => setNewStaffName(e.target.value)}
+                      className="w-full bg-[#FAFAF8] border border-[#0A0A0A]/12 rounded-xl py-3 px-4 text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/35 focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label htmlFor="new-staff-email" className="font-sans text-[9px] font-bold uppercase tracking-[0.15em] text-[#0A0A0A]/45">Correo electrónico</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
+                      <input
+                        id="new-staff-email"
+                        type="email"
+                        placeholder="staff@blancoyoga.com"
+                        value={newStaffEmail}
+                        onChange={(e) => setNewStaffEmail(e.target.value)}
+                        className="w-full bg-[#FAFAF8] border border-[#0A0A0A]/12 rounded-xl py-3 pl-11 pr-4 text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/35 focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                      />
+                    </div>
+                    <p className="font-sans text-[10px] text-[#0A0A0A]/40">
+                      Para un acceso compartido, usa un solo correo que todo el equipo conozca. Si el correo ya existe, se actualizará su contraseña.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label htmlFor="new-staff-password" className="font-sans text-[9px] font-bold uppercase tracking-[0.15em] text-[#0A0A0A]/45">Contraseña</label>
+                    <input
+                      id="new-staff-password"
+                      type="text"
+                      placeholder="Mínimo 4 caracteres"
+                      value={newStaffPassword}
+                      onChange={(e) => setNewStaffPassword(e.target.value)}
+                      className="w-full bg-[#FAFAF8] border border-[#0A0A0A]/12 rounded-xl py-3 px-4 text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/35 focus:outline-none focus:border-[#0A0A0A] transition-colors font-mono"
+                    />
+                  </div>
+
+                  {staffFormError && (
+                    <div className="bg-rose-50 border border-rose-200 p-3 rounded-xl text-rose-700 text-xs font-sans">
+                      {staffFormError}
+                    </div>
+                  )}
+                  {staffFormSuccess && (
+                    <div className="bg-[#EDF2EF] border border-[#5A8C7C]/25 p-3 rounded-xl text-[#3D6456] text-xs font-sans flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 shrink-0" strokeWidth={2.5} />
+                      {staffFormSuccess}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    id="register-staff-btn"
+                    onClick={handleStaffRegisterSubmit}
+                    className="w-full bg-[#0A0A0A] hover:bg-[#2A2A2A] text-white py-3.5 rounded-xl font-sans text-[10px] font-bold uppercase tracking-[0.18em] transition-colors cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    Guardar acceso de staff
+                  </button>
+                </div>
+              </div>
+
+              {/* Existing staff list */}
+              {(() => {
+                const staffMembers = registeredUsers.filter(u => u.role === 'staff');
+                return (
+                  <div className="mt-4 space-y-2">
+                    <p className="font-sans text-[9px] font-bold uppercase tracking-[0.15em] text-[#0A0A0A]/45 px-1">
+                      Cuentas actuales ({staffMembers.length})
+                    </p>
+                    {staffMembers.map((member) => {
+                      const isSelf = member.id === staffUser.id;
+                      return (
+                        <div
+                          key={member.id}
+                          className="bg-white border border-[#0A0A0A]/10 rounded-xl px-4 py-3 flex items-center justify-between gap-3"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-9 h-9 rounded-full bg-[#EFEFED] flex items-center justify-center shrink-0">
+                              <Shield className="w-4 h-4 text-[#0A0A0A]/55" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-sans text-sm font-semibold text-[#0A0A0A] truncate flex items-center gap-2">
+                                {member.name}
+                                {isSelf && (
+                                  <span className="text-[8px] font-bold uppercase tracking-[0.15em] text-[#0A0A0A]/40 bg-[#EFEFED] px-1.5 py-0.5 rounded-full shrink-0">Tú</span>
+                                )}
+                              </p>
+                              <p className="font-sans text-xs text-[#0A0A0A]/45 truncate">{member.email}</p>
+                            </div>
+                          </div>
+                          {onRemoveStaff && !isSelf && (
+                            <button
+                              id={`remove-staff-${member.id}`}
+                              onClick={() => onRemoveStaff(member.id)}
+                              className="w-9 h-9 rounded-xl border border-[#0A0A0A]/12 text-[#0A0A0A]/40 hover:text-rose-600 hover:border-rose-200 transition-colors flex items-center justify-center cursor-pointer shrink-0"
+                              title="Eliminar acceso"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </section>
           </div>
 
